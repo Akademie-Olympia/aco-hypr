@@ -1,13 +1,15 @@
 # Package-local recipe. Stage checksummed sources with packaging/arch/build.sh.
-pkgname=arch-dotfiles-hypr
+pkgname=aco-arch-dotfiles-hypr
 pkgver=0.3.0
 pkgrel=1
 pkgdesc='Hyprland desktop, screenshot and window helpers'
 arch=('any')
-url='https://github.com/Akademie-Olympia/aco-dotfiles'
+url='https://github.com/Akademie-Olympia/aco-arch-dotfiles'
 license=('LicenseRef-arch-dotfiles-bundle')
-depends=('arch-dotfiles-core>=0.3.0' 'hyprland>=0.56.0' 'hyprpaper' 'hyprlock' 'hypridle' 'xdg-desktop-portal-hyprland' 'wl-clipboard' 'grim' 'slurp' 'satty' 'brightnessctl' 'jq' 'util-linux' 'procps-ng' 'sudo' 'arch-dotfiles-kitty' 'arch-dotfiles-fuzzel' 'arch-dotfiles-waybar' 'arch-dotfiles-wallpaper' 'arch-dotfiles-tmux' 'arch-dotfiles-yazi' 'arch-dotfiles-pcmanfm' 'firefox')
+depends=('aco-arch-dotfiles-core>=0.3.0' 'hyprland>=0.56.0' 'hyprpaper' 'hyprlock' 'hypridle' 'xdg-desktop-portal-hyprland' 'wl-clipboard' 'grim' 'slurp' 'satty' 'brightnessctl' 'jq' 'util-linux' 'procps-ng' 'sudo' 'aco-arch-dotfiles-kitty' 'aco-arch-dotfiles-fuzzel' 'aco-arch-dotfiles-waybar' 'aco-arch-dotfiles-wallpaper' 'aco-arch-dotfiles-tmux' 'aco-arch-dotfiles-yazi' 'aco-arch-dotfiles-pcmanfm' 'firefox')
 optdepends=()
+replaces=('arch-dotfiles-hypr')
+conflicts=('arch-dotfiles-hypr')
 options=('!strip')
 source=('payload.tar.gz')
 sha256sums=('__SOURCE_SHA256__')

@@ -17,6 +17,6 @@ jobs:
           python3 -m unittest discover -s packaging/arch/tests -v
   package:
     needs: screenshot
-    uses: Akademie-Olympia/aco-dotfiles/.github/workflows/component.yml@main
+    uses: Akademie-Olympia/aco-arch-dotfiles/.github/workflows/component.yml@main
     secrets:
       DOTFILES_DISPATCH_TOKEN: ${{ secrets.DOTFILES_DISPATCH_TOKEN }}

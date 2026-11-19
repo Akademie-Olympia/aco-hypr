@@ -2,15 +2,15 @@
 
 Hyprland-Desktop mit Fenster-/Slot-Wechsel, Screenshots, Menüs und Multi-Monitor-Unterstützung.
 
-**[Vollständige Dokumentation und Keybindings](https://arch-dotfiles.readthedocs.io/en/latest/hyprland/)** ·
-[Komponenten](https://arch-dotfiles.readthedocs.io/en/latest/components/#hyprland) ·
-[Installation und Sicherheit](https://arch-dotfiles.readthedocs.io/en/latest/arch-package/)
+**[Vollständige Dokumentation und Keybindings](https://aco-arch-dotfiles.readthedocs.io/en/latest/hyprland/)** ·
+[Komponenten](https://aco-arch-dotfiles.readthedocs.io/en/latest/components/#hyprland) ·
+[Installation und Sicherheit](https://aco-arch-dotfiles.readthedocs.io/en/latest/arch-package/)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Akademie-Olympia/aco-dotfiles/main/install.sh | bash -s -- hypr
+curl -fsSL https://raw.githubusercontent.com/Akademie-Olympia/aco-arch-dotfiles/main/install.sh | bash -s -- hypr
 ```
 
-Paket: `arch-dotfiles-hypr`. Einstieg: `~/.config/hypr/hyprland.lua`.
+Paket: `aco-arch-dotfiles-hypr`. Einstieg: `~/.config/hypr/hyprland.lua`.
 Rechnerabhängige Monitorregeln gehören in die nicht verteilte `monitors.local.lua`.
 Desktop-Komponenten werden als Paketabhängigkeiten installiert; es wird keine
 laufende Sitzung automatisch neugestartet.
@@ -54,7 +54,7 @@ lokale Monitorregeln haben Vorrang; bestehende individuelle Layouts bleiben erha
 
 `~/.config/hypr/monitors.local.lua` ist für rechnerbezogene Monitorregeln vorgesehen und wird nicht paketiert. Die Vorlage `monitors.example.lua` zeigt das Format; `hyprctl monitors all` zeigt Anschlüsse. `Super + S` blendet den Scratchpad-Workspace ein oder aus; `Super + Shift + S` verschiebt das aktive Fenster dorthin. Nach Änderungen `hyprctl reload` und `hyprctl configerrors` ausführen.
 
-Eigene Änderungen in der aktivierten Benutzerkopie bleiben bei der Synchronisierung erhalten; neue abweichende Vorgaben erscheinen als `.pacnew`. Siehe [Update und Wiederherstellung](https://arch-dotfiles.readthedocs.io/en/latest/verification/).
+Eigene Änderungen in der aktivierten Benutzerkopie bleiben bei der Synchronisierung erhalten; neue abweichende Vorgaben erscheinen als `.pacnew`. Siehe [Update und Wiederherstellung](https://aco-arch-dotfiles.readthedocs.io/en/latest/verification/).
 
 [![Package safety](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml/badge.svg)](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml)
 
