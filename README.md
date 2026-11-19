@@ -1,61 +1,56 @@
 # Hyprland configuration
 
-Hyprland-Desktop mit Fenster-/Slot-Wechsel, Screenshots, Menüs und Multi-Monitor-Unterstützung.
+Hyprland desktop with window/slot switching, screenshots, menus, a monitor manager and multi-monitor support.
 
-**[Vollständige Dokumentation und Keybindings](https://aco-hypr.readthedocs.io/en/latest/)** ·
-[Komponenten](https://aco-arch-dotfiles.readthedocs.io/en/latest/components/#hyprland) ·
-[Installation und Sicherheit](https://aco-arch-dotfiles.readthedocs.io/en/latest/arch-package/)
+**[Full documentation and key bindings](https://aco-hypr.readthedocs.io/en/latest/)** ·
+[Design & dependencies](https://aco-hypr.readthedocs.io/en/latest/design/) ·
+[Installation and security](https://aco-arch-dotfiles.readthedocs.io/en/latest/arch-package/)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Akademie-Olympia/aco-arch-dotfiles/main/install.sh | bash -s -- hypr
 ```
 
-Paket: `aco-arch-dotfiles-hypr`. Einstieg: `~/.config/hypr/hyprland.lua`.
-Rechnerabhängige Monitorregeln gehören in die nicht verteilte `monitors.local.lua`.
-Desktop-Komponenten werden als Paketabhängigkeiten installiert; es wird keine
-laufende Sitzung automatisch neugestartet.
+Package: `aco-arch-dotfiles-hypr`. Entry point: `~/.config/hypr/hyprland.lua`.
+Machine-specific monitor rules belong in the undistributed `monitors.local.lua` (or let `monitors.sh` write it, `Super + Shift + D`).
+Desktop components are installed as package dependencies; a running session is never restarted automatically.
 
-In diesem Repository entwickeln und auf `main` pushen. Nach erfolgreichem
-Registry-Build mit `sudo pacman -Syu` aktualisieren. [PACKAGING.md](PACKAGING.md).
+Develop in this repository and push to `main`. After a successful registry build update with `sudo pacman -Syu`. [PACKAGING.md](PACKAGING.md).
 
-### Screenshot / Snipping Tool
+### Screenshot / snipping tool
 
-`grim`, `slurp`, `wl-clipboard` und Satty werden mit dem Hyprland-Paket installiert.
-Im Launcher steht **Screenshot (Ausschneiden)** bereit; im Terminal: `screenshot`.
+`grim`, `slurp`, `wl-clipboard` and Satty are installed with the Hyprland package.
+The launcher offers **Screenshot (snip)**; in a terminal use `screenshot`.
 
-| Taste | Aufnahme |
+| Key | Capture |
 | --- | --- |
-| `Druck` oder `Super + Shift + P` | Bereich auswählen |
-| `Alt + Druck` | Aktives Fenster |
-| `Shift + Druck` | Aktiver Monitor |
-| `Super + Druck` | Alle Monitore |
+| `Print` or `Super + Shift + P` | Select a region |
+| `Alt + Print` | Active window |
+| `Shift + Print` | Active monitor |
+| `Super + Print` | All monitors |
 
-Die PNG-Datei wird in `~/Downloads` gespeichert und sofort in die Zwischenablage
-kopiert. Satty öffnet sich schwebend zum Beschriften mit Pfeilen, Text und
-Markierungen. `Enter` / `Strg+C` kopiert und speichert die bearbeitete Version;
-`Strg+S` speichert. Danach schließt sich der Editor. Bei aktiver Texteingabe
-bestätigt `Enter` zunächst den Text. `Esc` bricht die Auswahl ab; im Editor bleibt
-die bereits gespeicherte Originalaufnahme erhalten.
+The PNG is saved to `~/Downloads` and copied to the clipboard immediately. Satty opens floating for annotating with arrows, text and markers.
+`Enter` / `Ctrl+C` copies and saves the edited version; `Ctrl+S` saves. The editor then closes. While typing text, `Enter` first confirms the text.
+`Esc` cancels the selection; in the editor the already saved original capture is kept.
 
-Die Vorgaben liegen in `~/.config/hypr/satty.toml` (Farben passend zum Desktop,
-Pfeilwerkzeug, sichtbare Werkzeugleisten). Eigene Anpassungen bleiben wie andere
-Benutzereinstellungen bei Updates erhalten. `SCREENSHOT_DIR` überschreibt den
-Speicherort, z. B. `SCREENSHOT_DIR="$HOME/Pictures/Screenshots" screenshot region`.
-Weitere Modi: `screenshot window`, `screenshot monitor`, `screenshot full`.
-Ohne Satty funktioniert weiterhin die Aufnahme samt Speichern und Kopieren.
-Fensteraufnahmen zeigen den sichtbaren Bildschirmausschnitt, keine verdeckten
-Fensterinhalte. Es läuft kein zusätzlicher Hintergrunddienst.
+The defaults live in `~/.config/hypr/satty.toml` (colours matching the desktop, arrow tool, visible toolbars). Your own changes survive updates like
+other user settings. `SCREENSHOT_DIR` overrides the location, for example `SCREENSHOT_DIR="$HOME/Pictures/Screenshots" screenshot region`.
+More modes: `screenshot window`, `screenshot monitor`, `screenshot full`. Without Satty, capturing, saving and copying still work.
+Window captures show the visible part of the screen, not hidden window contents. No extra background service runs.
 
-### Lokale Monitore und Tastenkombinationen
+### Monitors and local rules
 
-Neue Monitore werden standardmäßig mit bevorzugter Auflösung und Skalierung `1`
-automatisch rechts neben den vorhandenen angeordnet (`auto-right`). Explizite
-lokale Monitorregeln haben Vorrang; bestehende individuelle Layouts bleiben erhalten.
+New monitors are placed to the right of the existing ones with their preferred resolution and scale `1` (`auto-right`). Explicit local monitor
+rules take precedence; existing individual layouts are preserved.
 
-`~/.config/hypr/monitors.local.lua` ist für rechnerbezogene Monitorregeln vorgesehen und wird nicht paketiert. Die Vorlage `monitors.example.lua` zeigt das Format; `hyprctl monitors all` zeigt Anschlüsse. `Super + S` blendet den Scratchpad-Workspace ein oder aus; `Super + Shift + S` verschiebt das aktive Fenster dorthin. Nach Änderungen `hyprctl reload` und `hyprctl configerrors` ausführen.
+`~/.config/hypr/monitors.local.lua` holds machine-specific monitor rules and is not packaged. The template `monitors.example.lua` shows the
+format; `hyprctl monitors all` lists the outputs. Instead of editing it by hand you can use `monitors.sh` (`Super + Shift + D`): extend, mirror,
+arrange monitors relative to each other, scale, rotate and save profiles that are restored automatically when the same monitors are plugged in.
+`Super + S` shows or hides the scratchpad workspace; `Super + Shift + S` moves the active window there. After changes run `hyprctl reload` and
+`hyprctl configerrors`.
 
-Eigene Änderungen in der aktivierten Benutzerkopie bleiben bei der Synchronisierung erhalten; neue abweichende Vorgaben erscheinen als `.pacnew`. Siehe [Update und Wiederherstellung](https://aco-arch-dotfiles.readthedocs.io/en/latest/verification/).
+Your own changes in the activated user copy survive synchronisation; new differing defaults appear as `.pacnew`.
+See [update and recovery](https://aco-arch-dotfiles.readthedocs.io/en/latest/verification/).
 
 [![Package safety](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml/badge.svg)](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml)
 
-[MIT-Lizenz](LICENSE).
+[MIT licence](LICENSE).

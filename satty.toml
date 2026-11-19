@@ -1,4 +1,4 @@
-# Wird von screenshot.sh explizit geladen; unabhängig von anderen Satty-Profilen.
+# Loaded explicitly by screenshot.sh; independent of other Satty profiles.
 [general]
 initial-tool = "arrow"
 copy-command = "wl-copy --type image/png"
@@ -14,6 +14,6 @@ no-window-decoration = true
 family = "sans-serif"
 style = "Regular"
 
-# Catppuccin Mocha, passend zum Desktop. Zahlen 1–8 wählen die Farbe.
+# Catppuccin Mocha, matching the desktop. The numbers 1-8 select the colour.
 [color-palette]
 palette = ["#f38ba8", "#fab387", "#f9e2af", "#a6e3a1", "#94e2d5", "#89b4fa", "#cba6f7", "#cdd6f4"]

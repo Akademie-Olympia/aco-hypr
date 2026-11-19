@@ -22,6 +22,9 @@ layouts belong in `~/.config/hypr/monitors.local.lua`, which is loaded after the
 default monitor rules and excluded from Git. No personal monitor layout needs to
 be committed, even when `~/.config/hypr` points into the dotfiles repository.
 
+The easiest way is the monitor manager: {kbd}`Super + Shift + D` (or `~/.config/hypr/monitors.sh`) arranges, mirrors, scales and rotates monitors and
+saves profiles that restore themselves when the same monitors are plugged in (see [Configuration](configuration)). To edit the file by hand instead:
+
 ```bash
 # Create once; preserve an existing local configuration:
 cp -n ~/.config/hypr/monitors.example.lua ~/.config/hypr/monitors.local.lua
@@ -177,4 +180,4 @@ the text first; press it again to copy/save the image.
 
 ## Wallpaper
 
-Wallpaper-Befehle und Konfiguration stehen im eigenen Handbuch: [aco-wallpaper](https://aco-wallpaper.readthedocs.io/en/latest/).
+Wallpaper commands and configuration are documented in the [Wallpaper guide](https://aco-docs.readthedocs.io/en/latest/wallpaper/guide/).

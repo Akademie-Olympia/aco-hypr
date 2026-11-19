@@ -27,6 +27,10 @@ monitors.sh [befehl]
   extend [right|left|above|below]
                              Alle Bildschirme nebeneinander anordnen (intern zuerst)
   mirror [quelle]            Alle anderen Bildschirme spiegeln die Quelle (Standard: intern)
+  map                        Layout als Text-Skizze zeichnen
+  arrange <anschluss> <left-of|right-of|above|below> <referenz> [start|center|end]
+                             Bildschirm relativ zu einem anderen platzieren
+                             (Ausrichtung an Anfang, Mitte oder Ende der Kante)
   only <anschluss>|internal|external
                              Nur diesen Bildschirm aktiv lassen
   on <anschluss>             Bildschirm wieder einschalten (danach extend)
@@ -44,7 +48,8 @@ HELP
 need() { command -v "$1" >/dev/null || { echo "monitors.sh: '$1' fehlt" >&2; exit 1; }; }
 need hyprctl; need jq
 
-notify() { command -v notify-send >/dev/null && notify-send -a Bildschirme "$@" || true; }
+# Built-in Hyprland notification: no notification daemon required.
+notify() { hyprctl notify -1 2500 "rgb(89b4fa)" "$*" >/dev/null 2>&1 || true; }
 
 live() { hyprctl monitors all -j; }
 
@@ -176,6 +181,76 @@ layout_only() {
     done
 }
 
+
+# --- Anordnen ---------------------------------------------------------------------
+# arrange MON RELATION REF [ALIGN]: setzt Position von MON relativ zu REF.
+layout_arrange() {
+    local mon="${1:-}" rel="${2:-}" ref="${3:-}" align="${4:-start}"
+    require_output "$mon"; require_output "$ref"
+    [[ $mon != "$ref" ]] || { echo "Ein Bildschirm kann nicht relativ zu sich selbst stehen." >&2; exit 2; }
+    [[ $align =~ ^(start|center|end)$ ]] || { echo "Ausrichtung: start|center|end" >&2; exit 2; }
+    local w h rw rh rx ry x y
+    read -r w h < <(logical_size "$mon")
+    read -r rw rh < <(logical_size "$ref")
+    rx="$(jq -r --arg n "$ref" '.[$n].x' "$state_file")"
+    ry="$(jq -r --arg n "$ref" '.[$n].y' "$state_file")"
+    set_field "$mon" disabled false; set_field "$mon" mirror null
+    local off_y=0 off_x=0
+    case $align in
+        center) off_y=$(((rh - h) / 2)); off_x=$(((rw - w) / 2)) ;;
+        end)    off_y=$((rh - h));       off_x=$((rw - w)) ;;
+    esac
+    case $rel in
+        right-of) x=$((rx + rw)); y=$((ry + off_y)) ;;
+        left-of)  x=$((rx - w));  y=$((ry + off_y)) ;;
+        below)    x=$((rx + off_x)); y=$((ry + rh)) ;;
+        above)    x=$((rx + off_x)); y=$((ry - h)) ;;
+        *) echo "Relation: left-of|right-of|above|below" >&2; exit 2 ;;
+    esac
+    set_field "$mon" x "$x"; set_field "$mon" y "$y"
+}
+
+# Text-Skizze des aktuellen Layouts (aus dem gespeicherten Zustand, sonst live).
+show_map() {
+    local rows=""
+    if [[ -s $state_file ]]; then
+        local n w h
+        for n in $(names); do
+            [[ $(jq -r --arg n "$n" '.[$n].disabled // false' "$state_file") == true ]] && continue
+            [[ $(jq -r --arg n "$n" '.[$n] // empty | .mirror // empty' "$state_file") == "" ]] || continue
+            read -r w h < <(logical_size "$n")
+            rows+="$n $(jq -r --arg n "$n" '"\(.[$n].x) \(.[$n].y)"' "$state_file") $w $h"$'\n'
+        done
+    else
+        rows="$(live | jq -r '.[] | select(.disabled | not) | select((.mirrorOf // "none") == "none") |
+            "\(.name) \(.x) \(.y) \((.width / .scale) | floor) \((.height / .scale) | floor)"')"$'\n'
+    fi
+    printf '%s' "$rows" | awk -v cols=64 '
+        { name[NR]=$1; x[NR]=$2; y[NR]=$3; w[NR]=$4; h[NR]=$5; n=NR
+          if (NR==1 || $2<minx) minx=$2; if (NR==1 || $3<miny) miny=$3
+          if (NR==1 || $2+$4>maxx) maxx=$2+$4; if (NR==1 || $3+$5>maxy) maxy=$3+$5 }
+        END {
+            if (!n) { print "Keine aktiven Bildschirme."; exit }
+            sx = (maxx-minx) / cols; if (sx < 1) sx = 1
+            sy = sx * 2.2                      # Zeichen sind etwa doppelt so hoch wie breit
+            W = int((maxx-minx)/sx) + 1; H = int((maxy-miny)/sy) + 1
+            for (r=0; r<H; r++) for (c=0; c<W; c++) g[r,c]=" "
+            for (i=1; i<=n; i++) {
+                c0=int((x[i]-minx)/sx); r0=int((y[i]-miny)/sy)
+                c1=int((x[i]+w[i]-minx)/sx)-1; r1=int((y[i]+h[i]-miny)/sy)-1
+                if (c1-c0 < 3) c1=c0+3; if (r1-r0 < 2) r1=r0+2
+                for (c=c0; c<=c1; c++) { g[r0,c]="-"; g[r1,c]="-" }
+                for (r=r0; r<=r1; r++) { g[r,c0]="|"; g[r,c1]="|" }
+                g[r0,c0]="+"; g[r0,c1]="+"; g[r1,c0]="+"; g[r1,c1]="+"
+                label=name[i]; lr=int((r0+r1)/2); lc=c0+int((c1-c0-length(label))/2)+1
+                for (k=1; k<=length(label) && lc+k-1<c1; k++) g[lr,lc+k-1]=substr(label,k,1)
+                dims=w[i] "x" h[i]; dr=lr+1
+                if (dr < r1) for (k=1; k<=length(dims) && lc+k-1<c1; k++) g[dr,lc+k-1]=substr(dims,k,1)
+            }
+            for (r=0; r<H+0; r++) { line=""; for (c=0; c<W+0; c++) line=line g[r,c]; sub(/ +$/, "", line); print line }
+        }'
+}
+
 # --- Anzeige ------------------------------------------------------------------------
 show_status() {
     live | jq -r '.[] |
@@ -192,7 +267,7 @@ menu() {
         printf '%s\n' "$list" | "${ask[@]}" --prompt='Anschluss '
     }
     local entries=$'  Erweitern: nebeneinander (rechts)\n  Erweitern: links\n  Erweitern: darüber\n  Erweitern: darunter
-  Spiegeln\n  Nur interner Bildschirm\n  Nur externer Bildschirm\n  Skalierung\n  Auflösung\n  Drehen
+  Spiegeln\n  Nur interner Bildschirm\n  Nur externer Bildschirm\n  Anordnen (relativ platzieren)\n  Skalierung\n  Auflösung\n  Drehen
   Profil laden\n  Profil speichern\n  Zurücksetzen (automatisch)\n  Status'
     local pick; pick="$(printf '%s\n' "$entries" | "${ask[@]}")" || exit 0
     case $pick in
@@ -203,6 +278,12 @@ menu() {
         *Spiegeln*) "$0" mirror ;;
         *"interner"*) "$0" only internal ;;
         *"externer"*) "$0" only external ;;
+        *Anordnen*) local mon rel ref al
+            mon="$(choose_output)" || exit 0
+            rel="$(printf 'right-of\nleft-of\nabove\nbelow\n' | "${ask[@]}" --prompt="$mon liegt … ")" || exit 0
+            ref="$(names | grep -vx -- "$mon" | "${ask[@]}" --prompt="… von ")" || exit 0
+            al="$(printf 'start\ncenter\nend\n' | "${ask[@]}" --prompt='Ausrichtung ')" || exit 0
+            "$0" arrange "$mon" "$rel" "$ref" "$al" ;;
         *Skalierung*) local o s; o="$(choose_output)" || exit 0
             s="$(printf '1\n1.25\n1.5\n1.75\n2\n' | "${ask[@]}" --prompt="Skalierung $o ")" || exit 0
             "$0" scale "$o" "$s" ;;
@@ -227,6 +308,8 @@ case $cmd in
     menu) ensure_state; menu ;;
     status|list|ls) show_status ;;
     extend) ensure_state; layout_extend "${1:-right}"; apply ;;
+    map) ensure_state; show_map ;;
+    arrange) ensure_state; layout_arrange "${1:-}" "${2:-}" "${3:-}" "${4:-start}"; apply ;;
     mirror) ensure_state; layout_mirror "${1:-}"; apply ;;
     only) ensure_state; layout_only "${1:?Anschluss|internal|external angeben}"; apply ;;
     on) ensure_state; require_output "${1:-}"; set_field "$1" disabled false; layout_extend right; apply ;;

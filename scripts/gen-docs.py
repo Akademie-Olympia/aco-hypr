@@ -6,7 +6,7 @@
 
 Every ``hl.bind(...)`` line is read, its key expression evaluated and its
 action described. Bindings the table below does not know are listed under
-"Sonstiges" with the raw action, and ``--check`` fails so a new binding is
+"Other" with the raw action, and ``--check`` fails so a new binding is
 never silently undocumented.
 """
 import argparse
@@ -20,73 +20,73 @@ TARGET = ROOT / "docs" / "keybindings.md"
 
 # (pattern on the action text, group, description) – first match wins.
 RULES = [
-    (r"exec_cmd\(terminal\)", "Programme", "Terminal öffnen"),
-    (r'exec_cmd\("kitty -e tmux', "Programme", "Terminal mit tmux-Sitzung `main`"),
-    (r"exec_cmd\(menu\)", "Programme", "Anwendungsstarter (Fuzzel)"),
-    (r"exec_cmd\(browser\)", "Programme", "Browser öffnen"),
-    (r"exec_cmd\(fileManager\)", "Programme", "Dateimanager (PCManFM)"),
-    (r"exec_cmd\(tuiFiles\)", "Programme", "Dateimanager im Terminal (Yazi)"),
-    (r"exec_cmd\(lock\)", "System", "Bildschirm sperren"),
-    (r"exec_cmd\(powermenu\)", "System", "Powermenü"),
-    (r"waybar", "System", "Waybar neu starten"),
-    (r"wallpaper .. \" tui\"", "System", "Wallpaper-Auswahl"),
-    (r"hl\.dsp\.exit", "System", "Hyprland beenden"),
-    (r"exec_cmd\(monitors", "System", "Bildschirm-Verwaltung (Layout, Spiegeln, Skalierung, Profile)"),
-    (r"aco keys", "System", "Tastenkürzel-Liste aller Programme"),
-    (r"exec_cmd\(windowswitcher\)", "Fenster", "Fensterwechsler"),
-    (r"exec_cmd\(screenshot .. \" region\"\)", "Screenshots", "Bereich aufnehmen"),
-    (r"exec_cmd\(screenshot .. \" full\"\)", "Screenshots", "Alle Monitore aufnehmen"),
-    (r"exec_cmd\(screenshot .. \" window\"\)", "Screenshots", "Aktives Fenster aufnehmen"),
-    (r"exec_cmd\(screenshot .. \" monitor\"\)", "Screenshots", "Aktiven Monitor aufnehmen"),
-    (r"window\.close", "Fenster", "Fenster schließen"),
-    (r'mode = "fullscreen"', "Fenster", "Vollbild umschalten"),
-    (r'mode = "maximized"', "Fenster", "Maximieren umschalten"),
-    (r"window\.float", "Fenster", "Schwebend umschalten"),
-    (r"window\.center", "Fenster", "Fenster zentrieren"),
-    (r"window\.pseudo", "Fenster", "Pseudo-Tiling umschalten"),
-    (r"togglesplit", "Fenster", "Teilungsrichtung wechseln"),
-    (r"focus_last_window", "Fenster", "Zum zuletzt aktiven Fenster wechseln"),
-    (r"cycle_all_windows", "Fenster", "Durch alle Fenster schalten"),
-    (r"cycle_same_class", "Fenster", "Zwischen Fenstern derselben Anwendung wechseln"),
-    (r"jump_window_slot", "Fenster", "Zu gespeichertem Fenster-Slot springen"),
-    (r"save_window_slot", "Fenster", "Aktuelles Fenster im Slot speichern"),
-    (r"window\.drag", "Fenster", "Fenster mit der Maus verschieben"),
-    (r"window\.resize\(\), \{ mouse", "Fenster", "Fenstergröße mit der Maus ändern"),
-    (r"window\.resize\(\{ x =", "Fenster", "Fenstergröße ändern"),
-    (r"window\.move\(\{ direction", "Fenster", "Fenster verschieben"),
-    (r"hl\.dsp\.focus\(\{ direction", "Fokus", "Fokus verschieben"),
-    (r"focus_next_monitor", "Monitore", "Fokus auf nächsten Monitor"),
-    (r"move_window_to_next_monitor", "Monitore", "Fenster auf nächsten Monitor"),
-    (r"swap_monitors_workspaces", "Monitore", "Workspaces der Monitore tauschen"),
-    (r'workspace\.toggle_special', "Scratchpad", "Scratchpad ein-/ausblenden"),
-    (r'window\.move\(\{ workspace = "special', "Scratchpad", "Fenster in den Scratchpad"),
-    (r'window\.move\(\{ workspace = "r\+1"', "Workspaces", "Fenster zum nächsten Workspace"),
-    (r'window\.move\(\{ workspace = "r-1"', "Workspaces", "Fenster zum vorigen Workspace"),
-    (r'window\.move\(\{ workspace = "empty"', "Workspaces", "Fenster auf freien Workspace"),
-    (r'window\.move\(\{ workspace = i', "Workspaces", "Fenster auf Workspace N verschieben"),
-    (r'focus\(\{ workspace = "r\+1"', "Workspaces", "Nächster Workspace"),
-    (r'focus\(\{ workspace = "r-1"', "Workspaces", "Voriger Workspace"),
-    (r'focus\(\{ workspace = "empty"', "Workspaces", "Freien Workspace öffnen"),
-    (r"focus\(\{ workspace = i", "Workspaces", "Zu Workspace N wechseln"),
-    (r"focus_existing_screen", "Workspaces", "Zu Bildschirm/Workspace N, falls vorhanden"),
-    (r"AudioRaise|wpctl set-volume -l", "Medien", "Lauter"),
-    (r"wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", "Medien", "Leiser"),
-    (r"set-mute @DEFAULT_AUDIO_SINK@", "Medien", "Stumm schalten"),
-    (r"set-mute @DEFAULT_AUDIO_SOURCE@", "Medien", "Mikrofon stumm schalten"),
-    (r"brightnessctl.*5%\+", "Medien", "Heller"),
-    (r"brightnessctl.*5%-", "Medien", "Dunkler"),
+    (r"exec_cmd\(terminal\)", "Programs", "Open terminal"),
+    (r'exec_cmd\("kitty -e tmux', "Programs", "Terminal with tmux session `main`"),
+    (r"exec_cmd\(menu\)", "Programs", "Application launcher (Fuzzel)"),
+    (r"exec_cmd\(browser\)", "Programs", "Open browser"),
+    (r"exec_cmd\(fileManager\)", "Programs", "File manager (PCManFM)"),
+    (r"exec_cmd\(tuiFiles\)", "Programs", "Terminal file manager (Yazi)"),
+    (r"exec_cmd\(lock\)", "System", "Lock screen"),
+    (r"exec_cmd\(powermenu\)", "System", "Power menu"),
+    (r"waybar", "System", "Restart Waybar"),
+    (r"wallpaper .. \" tui\"", "System", "Wallpaper picker"),
+    (r"hl\.dsp\.exit", "System", "Exit Hyprland"),
+    (r"exec_cmd\(monitors", "System", "Monitor manager (layout, mirror, scale, profiles)"),
+    (r"aco keys", "System", "Searchable list of all shortcuts"),
+    (r"exec_cmd\(windowswitcher\)", "Windows", "Window switcher"),
+    (r"exec_cmd\(screenshot .. \" region\"\)", "Screenshots", "Capture a region"),
+    (r"exec_cmd\(screenshot .. \" full\"\)", "Screenshots", "Capture all monitors"),
+    (r"exec_cmd\(screenshot .. \" window\"\)", "Screenshots", "Capture the active window"),
+    (r"exec_cmd\(screenshot .. \" monitor\"\)", "Screenshots", "Capture the active monitor"),
+    (r"window\.close", "Windows", "Close window"),
+    (r'mode = "fullscreen"', "Windows", "Toggle fullscreen"),
+    (r'mode = "maximized"', "Windows", "Toggle maximise"),
+    (r"window\.float", "Windows", "Toggle floating"),
+    (r"window\.center", "Windows", "Center window"),
+    (r"window\.pseudo", "Windows", "Toggle pseudo-tiling"),
+    (r"togglesplit", "Windows", "Toggle split direction"),
+    (r"focus_last_window", "Windows", "Switch to the last active window"),
+    (r"cycle_all_windows", "Windows", "Cycle through all windows"),
+    (r"cycle_same_class", "Windows", "Cycle between windows of the same application"),
+    (r"jump_window_slot", "Windows", "Jump to a saved window slot"),
+    (r"save_window_slot", "Windows", "Save the current window in a slot"),
+    (r"window\.drag", "Windows", "Move window with the mouse"),
+    (r"window\.resize\(\), \{ mouse", "Windows", "Resize window with the mouse"),
+    (r"window\.resize\(\{ x =", "Windows", "Resize window"),
+    (r"window\.move\(\{ direction", "Windows", "Move window"),
+    (r"hl\.dsp\.focus\(\{ direction", "Focus", "Move focus"),
+    (r"focus_next_monitor", "Monitors", "Focus the next monitor"),
+    (r"move_window_to_next_monitor", "Monitors", "Move window to the next monitor"),
+    (r"swap_monitors_workspaces", "Monitors", "Swap the workspaces of the monitors"),
+    (r'workspace\.toggle_special', "Scratchpad", "Show/hide scratchpad"),
+    (r'window\.move\(\{ workspace = "special', "Scratchpad", "Move window to the scratchpad"),
+    (r'window\.move\(\{ workspace = "r\+1"', "Workspaces", "Move window to the next workspace"),
+    (r'window\.move\(\{ workspace = "r-1"', "Workspaces", "Move window to the previous workspace"),
+    (r'window\.move\(\{ workspace = "empty"', "Workspaces", "Move window to an empty workspace"),
+    (r'window\.move\(\{ workspace = i', "Workspaces", "Move window to workspace N"),
+    (r'focus\(\{ workspace = "r\+1"', "Workspaces", "Next workspace"),
+    (r'focus\(\{ workspace = "r-1"', "Workspaces", "Previous workspace"),
+    (r'focus\(\{ workspace = "empty"', "Workspaces", "Open an empty workspace"),
+    (r"focus\(\{ workspace = i", "Workspaces", "Switch to workspace N"),
+    (r"focus_existing_screen", "Workspaces", "Go to screen/workspace N, if it exists"),
+    (r"AudioRaise|wpctl set-volume -l", "Media", "Volume up"),
+    (r"wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", "Media", "Volume down"),
+    (r"set-mute @DEFAULT_AUDIO_SINK@", "Media", "Mute"),
+    (r"set-mute @DEFAULT_AUDIO_SOURCE@", "Media", "Mute microphone"),
+    (r"brightnessctl.*5%\+", "Media", "Brighter"),
+    (r"brightnessctl.*5%-", "Media", "Dimmer"),
 ]
-GROUPS = ["Programme", "System", "Fenster", "Fokus", "Workspaces", "Monitore", "Scratchpad",
-          "Screenshots", "Medien", "Sonstiges"]
-NAMES = {"SUPER": "Super", "SHIFT": "Shift", "CTRL": "Strg", "ALT": "Alt", "Return": "Enter",
-         "space": "Leertaste", "Escape": "Esc", "BackSpace": "←Backspace", "Tab": "Tab",
+GROUPS = ["Programs", "System", "Windows", "Focus", "Workspaces", "Monitors", "Scratchpad",
+          "Screenshots", "Media", "Other"]
+NAMES = {"SUPER": "Super", "SHIFT": "Shift", "CTRL": "Ctrl", "ALT": "Alt", "Return": "Enter",
+         "space": "Space", "Escape": "Esc", "BackSpace": "Backspace", "Tab": "Tab",
          "left": "←", "right": "→", "up": "↑", "down": "↓", "period": ".", "comma": ",",
-         "Next": "Bild↓", "Prior": "Bild↑", "mouse_down": "Mausrad↓", "mouse_up": "Mausrad↑",
-         "mouse:272": "Linke Maustaste", "mouse:273": "Rechte Maustaste", "Print": "Druck",
+         "Next": "PageDown", "Prior": "PageUp", "mouse_down": "Wheel↓", "mouse_up": "Wheel↑",
+         "mouse:272": "Left mouse button", "mouse:273": "Right mouse button", "Print": "Print",
          "dead_circumflex": "^", "grave": "`", "numbersign": "#", "less": "<",
-         "XF86AudioRaiseVolume": "Lauter-Taste", "XF86AudioLowerVolume": "Leiser-Taste",
-         "XF86AudioMute": "Stumm-Taste", "XF86AudioMicMute": "Mikrofon-Taste",
-         "XF86MonBrightnessUp": "Heller-Taste", "XF86MonBrightnessDown": "Dunkler-Taste"}
+         "XF86AudioRaiseVolume": "Volume-up key", "XF86AudioLowerVolume": "Volume-down key",
+         "XF86AudioMute": "Mute key", "XF86AudioMicMute": "Mic key",
+         "XF86MonBrightnessUp": "Brightness-up key", "XF86MonBrightnessDown": "Brightness-down key"}
 SYMBOLS = {"mainMod": "SUPER", "key": "1…0", "slot": "1–4"}
 
 
@@ -147,7 +147,7 @@ def bindings(source):
         yield number, keys(parts[0]), action
 
 
-DIRECTIONS = {"left": "links", "right": "rechts", "up": "oben", "down": "unten"}
+DIRECTIONS = {"left": "left", "right": "right", "up": "up", "down": "down"}
 
 
 def describe(action):
@@ -155,15 +155,15 @@ def describe(action):
         if re.search(pattern, action):
             direction = re.search(r'direction = "(\w+)"', action)
             if direction:
-                text += " nach " + DIRECTIONS[direction[1]]
+                text += " " + DIRECTIONS[direction[1]]
             size = re.search(r"x = (-?\d+),\s*y = (-?\d+)", action)
             if size:
                 x, y = int(size[1]), int(size[2])
-                text = {(-1, 0): "Fenster schmaler", (1, 0): "Fenster breiter",
-                        (0, -1): "Fenster niedriger", (0, 1): "Fenster höher"}[
-                    ((x > 0) - (x < 0), (y > 0) - (y < 0))] + " (wiederholbar)"
+                text = {(-1, 0): "Narrower window", (1, 0): "Wider window",
+                        (0, -1): "Shorter window", (0, 1): "Taller window"}[
+                    ((x > 0) - (x < 0), (y > 0) - (y < 0))] + " (repeatable)"
             return group, text
-    return "Sonstiges", None
+    return "Other", None
 
 
 def render():
@@ -181,14 +181,14 @@ def render():
         seen.add(item)
         rows[group].append(item)
     out = ["<!-- GENERATED by scripts/gen-docs.py from hyprland.lua – do not edit by hand. -->", "",
-           "# Tastenkombinationen", "",
-           "`Super` ist die Windows-Taste. Diese Seite wird aus `hyprland.lua` erzeugt und ist daher",
-           "immer so aktuell wie die Konfiguration. Eigene Änderungen in `~/.config/hypr/hyprland.lua`",
-           "erscheinen hier nicht – sie gelten nur lokal.", ""]
+           "# Key bindings", "",
+           "`Super` is the Windows key. This page is generated from `hyprland.lua`, so it is",
+           "always as current as the configuration. Your own changes in `~/.config/hypr/hyprland.lua`",
+           "do not appear here – they only apply locally.", ""]
     for group in GROUPS:
         if not rows[group]:
             continue
-        out += [f"## {group}", "", "| Taste | Aktion |", "| --- | --- |"]
+        out += [f"## {group}", "", "| Key | Action |", "| --- | --- |"]
         for key, text in rows[group]:
             cells = " ".join("{kbd}`" + part.strip() + "`" if part.strip() else "" for part in [key])
             out.append(f"| {cells} | {text} |")

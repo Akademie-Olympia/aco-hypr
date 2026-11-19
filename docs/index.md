@@ -1,7 +1,7 @@
 # Hyprland
 
 ::::{div} aco-hero
-**Hyprland-Desktop mit Fenster-Slots, Screenshots, Menüs und Multi-Monitor-Unterstützung.**
+**Hyprland desktop with window slots, screenshots, menus, a monitor manager and multi-monitor support.**
 
 
 ::::
@@ -9,53 +9,53 @@
 ::::{grid} 1 2 2 3
 :gutter: 3
 
-:::{grid-item-card} Aufbau & Abhängigkeiten
+:::{grid-item-card} Design & dependencies
 :link: design
 :link-type: doc
 
-Warum so gebaut, benötigte Pakete, Bibliotheken und Versionen.
+Why it is built this way, required packages, libraries and versions.
 :::
 
-:::{grid-item-card} Tastenkombinationen
+:::{grid-item-card} Key bindings
 :link: keybindings
 :link-type: doc
 
-Alle Belegungen, direkt aus der Konfiguration erzeugt.
+Every binding, generated straight from the configuration.
 :::
 
-:::{grid-item-card} Desktop-Anleitung
+:::{grid-item-card} Desktop guide
 :link: guide
 :link-type: doc
 
-Philosophie, Fenster-Slots, Monitore, Workspaces, Screenshots.
+Philosophy, window slots, monitors, workspaces, screenshots.
 :::
 
 :::{grid-item-card} Installation
 :link: installation
 :link-type: doc
 
-Installieren, aktualisieren, entfernen.
+Install, update, remove.
 :::
 
-:::{grid-item-card} Konfiguration
+:::{grid-item-card} Configuration
 :link: configuration
 :link-type: doc
 
-Monitor-Vorlage und Hinweise.
+Monitor manager, template and notes.
 :::
 
 :::{grid-item-card} Waybar
-:link: https://aco-waybar.readthedocs.io/en/latest/
+:link: https://aco-docs.readthedocs.io/en/latest/waybar/
 :link-type: url
 
-Die Statusleiste dazu.
+The matching status bar.
 :::
 
 :::{grid-item-card} Wallpaper
-:link: https://aco-wallpaper.readthedocs.io/en/latest/
+:link: https://aco-docs.readthedocs.io/en/latest/wallpaper/
 :link-type: url
 
-Hintergrundbilder pro Monitor.
+Wallpapers per monitor.
 :::
 
 ::::

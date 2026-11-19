@@ -6,7 +6,7 @@ pkgdesc='Hyprland desktop, screenshot and window helpers'
 arch=('any')
 url='https://github.com/Akademie-Olympia/aco-arch-dotfiles'
 license=('LicenseRef-arch-dotfiles-bundle')
-depends=('aco-arch-dotfiles-core>=0.3.0' 'hyprland>=0.56.0' 'hyprpaper' 'hyprlock' 'hypridle' 'xdg-desktop-portal-hyprland' 'wl-clipboard' 'grim' 'slurp' 'satty' 'brightnessctl' 'jq' 'util-linux' 'procps-ng' 'sudo' 'aco-arch-dotfiles-kitty' 'aco-arch-dotfiles-fuzzel' 'aco-arch-dotfiles-waybar' 'aco-arch-dotfiles-wallpaper' 'aco-arch-dotfiles-tmux' 'aco-arch-dotfiles-yazi' 'aco-arch-dotfiles-pcmanfm' 'firefox')
+depends=('aco-arch-dotfiles-core>=0.3.0' 'hyprland>=0.56.0' 'hyprpaper' 'hyprlock' 'hypridle' 'xdg-desktop-portal-hyprland' 'wl-clipboard' 'grim' 'slurp' 'satty' 'brightnessctl' 'jq' 'util-linux' 'procps-ng' 'sudo' 'aco-arch-dotfiles-kitty' 'aco-arch-dotfiles-fuzzel' 'aco-arch-dotfiles-waybar' 'aco-arch-dotfiles-wallpaper' 'aco-arch-dotfiles-tmux' 'aco-arch-dotfiles-yazi' 'aco-arch-dotfiles-pcmanfm' 'firefox' 'psmisc' 'wireplumber' 'xdg-desktop-portal-gtk')
 optdepends=()
 replaces=('arch-dotfiles-hypr')
 conflicts=('arch-dotfiles-hypr')
