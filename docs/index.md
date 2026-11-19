@@ -9,6 +9,13 @@
 ::::{grid} 1 2 2 3
 :gutter: 3
 
+:::{grid-item-card} Aufbau & Abhängigkeiten
+:link: design
+:link-type: doc
+
+Warum so gebaut, benötigte Pakete, Bibliotheken und Versionen.
+:::
+
 :::{grid-item-card} Tastenkombinationen
 :link: keybindings
 :link-type: doc
@@ -57,6 +64,7 @@ Hintergrundbilder pro Monitor.
 :hidden:
 :maxdepth: 2
 
+design
 keybindings
 guide
 installation
