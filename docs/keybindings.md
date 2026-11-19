@@ -30,6 +30,8 @@ erscheinen hier nicht – sie gelten nur lokal.
 | {kbd}`Super + Esc` | Powermenü |
 | {kbd}`Super + Shift + B` | Waybar neu starten |
 | {kbd}`Super + Shift + W` | Wallpaper-Auswahl |
+| {kbd}`Super + Shift + D` | Bildschirm-Verwaltung (Layout, Spiegeln, Skalierung, Profile) |
+| {kbd}`Super + K` | Tastenkürzel-Liste aller Programme |
 | {kbd}`Super + Shift + E` | Hyprland beenden |
 | {kbd}`Super + M` | Hyprland beenden |
 

@@ -47,6 +47,7 @@ local lock           = "hyprlock"
 local powermenu      = home .. "/.config/hypr/powermenu.sh"
 local windowswitcher = home .. "/.config/hypr/windowswitcher.sh"
 local wallpaper      = home .. "/.config/wallpaper/wallpaper.sh"
+local monitors       = home .. "/.config/hypr/monitors.sh"
 local screenshot     = string.format("%q", config_home .. "/hypr/screenshot.sh")
 
 
@@ -60,8 +61,13 @@ hl.on("hyprland.start", function()
 end)
 
 -- Neu angeschlossene Monitore erhalten die gespeicherte Belegung (sonst Default)
+-- Passt ein gespeichertes Profil (monitors.sh profile save) zu den angeschlossenen Bildschirmen,
+-- wird es automatisch geladen; sonst gelten die Standardregeln.
 hl.on("monitor.added", function()
-    hl.exec_cmd("sleep 0.6 && " .. wallpaper .. " apply --quiet")
+    hl.exec_cmd("sleep 1 && " .. monitors .. " auto; sleep 0.6; " .. wallpaper .. " apply --quiet")
+end)
+hl.on("monitor.removed", function()
+    hl.exec_cmd("sleep 1 && " .. monitors .. " auto")
 end)
 
 
@@ -195,6 +201,8 @@ hl.bind(mainMod .. " + L",              hl.dsp.exec_cmd(lock))
 hl.bind(mainMod .. " + Escape",    hl.dsp.exec_cmd(powermenu))
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR2 waybar || (pkill waybar; waybar &)"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd(wallpaper .. " tui"))
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd(monitors .. " menu"))
+hl.bind(mainMod .. " + K",         hl.dsp.exec_cmd("aco keys --menu"))
 hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exit())
 hl.bind(mainMod .. " + M",         hl.dsp.exit())
 

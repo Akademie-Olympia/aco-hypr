@@ -31,6 +31,8 @@ RULES = [
     (r"waybar", "System", "Waybar neu starten"),
     (r"wallpaper .. \" tui\"", "System", "Wallpaper-Auswahl"),
     (r"hl\.dsp\.exit", "System", "Hyprland beenden"),
+    (r"exec_cmd\(monitors", "System", "Bildschirm-Verwaltung (Layout, Spiegeln, Skalierung, Profile)"),
+    (r"aco keys", "System", "Tastenkürzel-Liste aller Programme"),
     (r"exec_cmd\(windowswitcher\)", "Fenster", "Fensterwechsler"),
     (r"exec_cmd\(screenshot .. \" region\"\)", "Screenshots", "Bereich aufnehmen"),
     (r"exec_cmd\(screenshot .. \" full\"\)", "Screenshots", "Alle Monitore aufnehmen"),
