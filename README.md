@@ -7,7 +7,7 @@ Hyprland-Desktop mit Fenster-/Slot-Wechsel, Screenshots, Menüs und Multi-Monito
 [Installation und Sicherheit](https://arch-dotfiles.readthedocs.io/en/latest/arch-package/)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/MichaelWeissDEV/dotfiles/main/install.sh | bash -s -- hypr
+curl -fsSL https://raw.githubusercontent.com/Akademie-Olympia/aco-dotfiles/main/install.sh | bash -s -- hypr
 ```
 
 Paket: `arch-dotfiles-hypr`. Einstieg: `~/.config/hypr/hyprland.lua`.
@@ -56,6 +56,6 @@ lokale Monitorregeln haben Vorrang; bestehende individuelle Layouts bleiben erha
 
 Eigene Änderungen in der aktivierten Benutzerkopie bleiben bei der Synchronisierung erhalten; neue abweichende Vorgaben erscheinen als `.pacnew`. Siehe [Update und Wiederherstellung](https://arch-dotfiles.readthedocs.io/en/latest/verification/).
 
-[![Package safety](https://github.com/MichaelWeissDEV/hypr-config/actions/workflows/package.yml/badge.svg)](https://github.com/MichaelWeissDEV/hypr-config/actions/workflows/package.yml)
+[![Package safety](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml/badge.svg)](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml)
 
 [MIT-Lizenz](LICENSE).
