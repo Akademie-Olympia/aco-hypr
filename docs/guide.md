@@ -1,0 +1,180 @@
+# Hyprland Desktop Environment & Keybindings
+
+Hyprland (`~/.config/hypr/hyprland.lua`) serves as the primary Wayland tiling compositor in the [`aco-arch-dotfiles`](https://aco-arch-dotfiles.readthedocs.io/en/latest/) ecosystem. It is engineered for **instant reaction speeds**, **maximum screen real estate**, **multi-monitor workspace agility**, and **seamless cross-monitor window recall**.
+
+---
+
+## Design Philosophy
+
+- **Responsiveness**: Animations, shadows, and blur are disabled (`animations.enabled = false`, `blur.enabled = false`, `shadow.enabled = false`).
+- **Screen space**: No inner or outer gaps, unrounded corners and a `1px` border.
+- **Window navigation**: Return to the previous window (`Alt + Tab`), cycle windows (`Alt + Shift + Tab`), search with Fuzzel (`Super + G`), or use cross-monitor slots.
+- **TTY launch**: Log into a Linux TTY and start the session with `start-hyprland`.
+
+---
+
+## Personal Monitor Layout (Git-Ignored)
+
+The shared configuration automatically detects monitors at scale `1` and places
+new outputs to the right of existing monitors (`auto-right`). Explicit local rules
+take precedence, so existing personal layouts are preserved. Individual
+layouts belong in `~/.config/hypr/monitors.local.lua`, which is loaded after the
+default monitor rules and excluded from Git. No personal monitor layout needs to
+be committed, even when `~/.config/hypr` points into the dotfiles repository.
+
+```bash
+# Create once; preserve an existing local configuration:
+cp -n ~/.config/hypr/monitors.example.lua ~/.config/hypr/monitors.local.lua
+hyprctl monitors all
+$EDITOR ~/.config/hypr/monitors.local.lua
+hyprctl reload
+hyprctl configerrors
+```
+
+Uncomment and adapt the template's `hl.monitor({...})` rules: `output` is the
+connector name, `mode` is `WIDTHxHEIGHT@HZ`, and `position` is `XxY` in logical
+pixels. Local edits require `hyprctl reload`. Without the local file, automatic
+placement remains active. `XDG_CONFIG_HOME` is respected when set. Back up the
+local file separately: it is not part of Git and `git clean -fdx` can delete it.
+
+---
+
+## Application Launchers & System Controls
+
+The primary modifier key (`SUPER`) is the **Windows / Super key**.
+
+| Keybinding | Command / Script | Action |
+| :--- | :--- | :--- |
+| <kbd>Super</kbd> + <kbd>Space</kbd> *(or <kbd>Alt</kbd> + <kbd>Space</kbd>, <kbd>Super</kbd> + <kbd>D</kbd> / <kbd>R</kbd> / <kbd>A</kbd>)* | `pkill -x fuzzel \|\| fuzzel` | Toggle **Fuzzel** application launcher |
+| <kbd>Super</kbd> + <kbd>Return</kbd> *(or <kbd>Super</kbd> + <kbd>Q</kbd>)* | `kitty` | Open default terminal ([Kitty](https://aco-kitty.readthedocs.io/en/latest/)) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> | `kitty -e tmux new-session -A -s main` | Open terminal attached to persistent [tmux](https://aco-tmux.readthedocs.io/en/latest/) session `main` |
+| <kbd>Super</kbd> + <kbd>B</kbd> | `firefox` | Launch web browser (**Firefox**) |
+| <kbd>Super</kbd> + <kbd>E</kbd> | `pcmanfm` | Open GUI file manager (**PCManFM** in Catppuccin Mocha GTK theme) |
+| <kbd>Super</kbd> + <kbd>Y</kbd> | `kitty -e yazi` | Open TUI file manager (**Yazi** in Catppuccin Mocha flavor) |
+| <kbd>Super</kbd> + <kbd>L</kbd> | `hyprlock` | Lock screen immediately |
+| <kbd>Super</kbd> + <kbd>Escape</kbd> | `~/.config/hypr/powermenu.sh` | Open top-right Fuzzel Power Menu (Shutdown, Reboot, Suspend, Lock, Logout) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> | `killall -SIGUSR2 waybar \|\| ...` | Reload or restart **Waybar** |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>W</kbd> | `~/.config/wallpaper/wallpaper.sh tui` | Open interactive multi-monitor **Wallpaper TUI** (`wallpaper`) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd> *(or <kbd>Super</kbd> + <kbd>M</kbd>)* | `hl.dsp.exit()` | Exit Hyprland session back to TTY |
+
+---
+
+## Cross-Monitor Window Switching & Pinning Slots (`1–10` / `F1–F4`)
+
+All window switching functions in `hyprland.lua` operate **globally across all connected monitors and workspaces** (including automatically revealing windows hidden in the special scratchpad workspace).
+
+### 1. Instant Ping-Pong & Cycling
+
+| Keybinding | Function | Action |
+| :--- | :--- | :--- |
+| <kbd>Alt</kbd> + <kbd>Tab</kbd> *(or <kbd>Super</kbd> + <kbd>Tab</kbd>, <kbd>Super</kbd> + <kbd>BackSpace</kbd>)* | `focus_last_window()` | **Jump immediately to the last active window** across any monitor or workspace. Pressing it again jumps right back (ping-pong switch). |
+| <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> *(or <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd>)* | `cycle_all_windows(1)` | **Cycle through all open windows** across all monitors and workspaces (sorted spatially left-to-right, top-to-bottom). |
+| <kbd>Super</kbd> + <kbd>^</kbd> *(or <kbd>Super</kbd> + <kbd>`</kbd>, key below Escape)* | `cycle_same_class()` | **Cycle through windows of the same application** across all monitors (e.g. all Kitty terminals or Firefox windows). |
+| <kbd>Super</kbd> + <kbd>G</kbd> *(or <kbd>Super</kbd> + <kbd>#</kbd>)* | `~/.config/hypr/windowswitcher.sh` | **Interactive Fuzzel Window & Slot Switcher**: Lists all open windows sorted by focus history (most recent window first -> press <kbd>Enter</kbd> to jump immediately, or type to filter by app, title, monitor, or `Pos 1..9`). |
+
+### 2. Window Pinning Slots (`1..10` and `F1..F4`)
+
+Pin critical windows (IDE, browser, docs, terminal, chat) to persistent slots and jump to them from any monitor:
+
+| Keybinding | Function | Action |
+| :--- | :--- | :--- |
+| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>1..9, 0</kbd> | `save_window_slot(1..10)` | **Pin/save active window to Slot `1..10`** (shows a desktop notification and tags the window with `slot_<n>`). |
+| <kbd>Super</kbd> + <kbd>Alt</kbd> + <kbd>1..9, 0</kbd> | `jump_window_slot(1..10)` | **Jump to Slot `1..10`** across any monitor/workspace:<br>• If a window is pinned to slot `<n>`, focuses it immediately *(pressing the same chord again while already in that window jumps back to your previous window!)*.<br>• If no window was manually pinned to slot `<n>`, jumps to the `<n>`-th open window spatially. |
+| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>F1..F4</kbd> *(or <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>F1..F4</kbd>)* | `save_window_slot(1..4)` | **Pin/save active window to Quick Slot `1..4`**. |
+| <kbd>Super</kbd> + <kbd>F1..F4</kbd> | `jump_window_slot(1..4)` | **Single-chord Quick Jump to Slot `1..4`** (or back to previous window if already focused). |
+
+---
+
+## Multi-Monitor Controls
+
+| Keybinding | Function | Action |
+| :--- | :--- | :--- |
+| <kbd>Super</kbd> + <kbd>O</kbd> *(or <kbd>Super</kbd> + <kbd>&lt;</kbd>)* | `focus_next_monitor(1)` | Focus the next / other physical monitor |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>O</kbd> *(or <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>&lt;</kbd>)* | `move_window_to_next_monitor()` | Move active window to the next physical monitor and focus it |
+| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>O</kbd> | `swap_monitors_workspaces()` | Swap the active workspaces between the two monitors |
+
+---
+
+## Workspaces (Dynamic / Infinite Workspaces)
+
+Workspaces are created dynamically as needed:
+
+| Keybinding | Action |
+| :--- | :--- |
+| <kbd>Super</kbd> + <kbd>1..9, 0</kbd> | Switch directly to workspace `1..10` (creates it if not yet active) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>1..9, 0</kbd> | Move active window to workspace `1..10` |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>1..9, 0</kbd> | Switch to workspace/monitor `1..10` **only if it already exists** (`focus_existing_screen`, avoids creating empty workspaces) |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>→</kbd> | Switch one workspace to the left (`r-1`) / right (`r+1`) |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd> | Move active window one workspace to the left (`r-1`) / right (`r+1`) |
+| <kbd>Super</kbd> + <kbd>.</kbd> *(or <kbd>Super</kbd> + <kbd>PageDown</kbd>)* | Switch to next workspace (`r+1`, unbounded) |
+| <kbd>Super</kbd> + <kbd>,</kbd> *(or <kbd>Super</kbd> + <kbd>PageUp</kbd>)* | Switch to previous workspace (`r-1`) |
+| <kbd>Super</kbd> + <kbd>N</kbd> | Jump to the next completely empty workspace (`empty`) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>.</kbd> / <kbd>,</kbd> | Move active window to next (`r+1`) / previous (`r-1`) workspace |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd> | Move active window to the next completely empty workspace |
+| <kbd>Super</kbd> + <kbd>Mouse Wheel Up / Down</kbd> | Cycle through workspaces (`r-1` / `r+1`) |
+| `3-Finger Horizontal Swipe` *(Touchpad)* | Swipe horizontally between workspaces |
+| <kbd>Super</kbd> + <kbd>S</kbd> | Toggle special scratchpad workspace (`special:magic`) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> | Move active window into the scratchpad (`special:magic`) |
+
+---
+
+## Window Tiling, Floating & Resizing
+
+| Keybinding | Action |
+| :--- | :--- |
+| <kbd>Super</kbd> + <kbd>C</kbd> *(or <kbd>Super</kbd> + <kbd>W</kbd>)* | Close active window |
+| <kbd>Super</kbd> + <kbd>F</kbd> | Toggle true fullscreen |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd> | Toggle maximized state (Waybar remains visible) |
+| <kbd>Super</kbd> + <kbd>V</kbd> | Toggle floating mode for active window |
+| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>C</kbd> | Center floating window on screen |
+| <kbd>Super</kbd> + <kbd>T</kbd> | Toggle dwindle split direction (Horizontal / Vertical) |
+| <kbd>Super</kbd> + <kbd>P</kbd> | Toggle pseudo-tiling for active window |
+| <kbd>Super</kbd> + <kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd> | Move focus directionally (crosses onto adjacent monitors automatically at screen edges) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd> | Move/swap active window directionally |
+| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>←</kbd> / <kbd>→</kbd> / <kbd>↑</kbd> / <kbd>↓</kbd> | Resize active window in `40px` increments (repeatable) |
+| <kbd>Super</kbd> + `Left Mouse Drag` | Move window with mouse |
+| <kbd>Super</kbd> + `Right Mouse Drag` | Resize window with mouse (or drag window borders directly) |
+
+---
+
+## Screenshots, Audio & Brightness
+
+| Keybinding | Command | Action |
+| :--- | :--- | :--- |
+| <kbd>Print</kbd> or <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> | `screenshot region` | Select region, save/copy, then annotate with Satty |
+| <kbd>Super</kbd> + <kbd>Print</kbd> | `screenshot full` | Capture all screens, save/copy, then annotate with Satty |
+| <kbd>Alt</kbd> + <kbd>Print</kbd> | `screenshot window` | Capture active window's visible screen area |
+| <kbd>Shift</kbd> + <kbd>Print</kbd> | `screenshot monitor` | Capture focused monitor |
+| `XF86AudioRaiseVolume` / `LowerVolume` | `wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+/-` | Increase / decrease volume in 5% steps (capped at 100%) |
+| `XF86AudioMute` / `XF86AudioMicMute` | `wpctl set-mute ... toggle` | Toggle speaker mute / microphone mute |
+| `XF86MonBrightnessUp` / `Down` | `brightnessctl -e4 -n2 set 5%+/-` | Increase / decrease screen brightness in 5% steps |
+
+### Snipping Tool
+
+The Hyprland package installs `grim`, `slurp`, `wl-clipboard` and `satty` as
+dependencies, along with the `screenshot` command and the **Screenshot** application
+entry in Fuzzel. No additional screenshot daemon is needed.
+
+Press **Print**, draw a rectangle, and use Satty to add arrows, text, highlights
+or blur. **Enter / Ctrl+C** copies the edited image, saves it and closes Satty;
+**Ctrl+S** saves to file. Escape during selection cancels without taking a capture.
+The original capture is saved and copied before the editor opens, so closing
+the editor without saving retains the original.
+
+Files go to `~/Downloads/screenshot-*.png` (override with `SCREENSHOT_DIR`).
+If Satty is not installed, capture/save/copy still work without annotation.
+`screenshot` or `screenshot region` selects a region; `screenshot full` captures
+all screens. `screenshot window` captures the active window's visible screen area
+(not obscured content); `screenshot monitor` captures the focused monitor.
+
+Satty opens as a centered floating editor. Its desktop-matching palette, arrow
+tool and copy/save behavior are configured in `~/.config/hypr/satty.toml`.
+This file is managed like other Hyprland defaults: user changes are preserved,
+and conflicting updates arrive as `.pacnew`. While editing text, Enter confirms
+the text first; press it again to copy/save the image.
+
+---
+
+## Wallpaper
+
+Wallpaper-Befehle und Konfiguration stehen im eigenen Handbuch: [aco-wallpaper](https://aco-wallpaper.readthedocs.io/en/latest/).

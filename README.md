@@ -2,7 +2,7 @@
 
 Hyprland-Desktop mit Fenster-/Slot-Wechsel, Screenshots, Menüs und Multi-Monitor-Unterstützung.
 
-**[Vollständige Dokumentation und Keybindings](https://aco-arch-dotfiles.readthedocs.io/en/latest/hyprland/)** ·
+**[Vollständige Dokumentation und Keybindings](https://aco-hypr.readthedocs.io/en/latest/)** ·
 [Komponenten](https://aco-arch-dotfiles.readthedocs.io/en/latest/components/#hyprland) ·
 [Installation und Sicherheit](https://aco-arch-dotfiles.readthedocs.io/en/latest/arch-package/)
 
