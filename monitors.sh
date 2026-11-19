@@ -16,6 +16,8 @@ state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
 lua_file="$config_home/hypr/monitors.local.lua"
 state_file="$state_home/aco/monitors.json"
 profile_dir="$config_home/aco/monitor-profiles"
+defaults_file="$config_home/aco/monitor-defaults.json"   # placement policy for unknown setups
+known_file="$state_home/aco/monitors-known.json"         # mode/scale/rotation per physical display
 wallpaper="$config_home/wallpaper/wallpaper.sh"
 
 usage() {
@@ -39,6 +41,10 @@ monitors.sh [befehl]
   rotate <anschluss> <0-3>   0 normal, 1 90°, 2 180°, 3 270°
   profile save|load|list|delete <name>
                              Benannte Layouts sichern und wiederherstellen
+  default [placement|align|internal-off <wert>] | default apply
+                             Standard für unbekannte Setups: wohin neue Monitore kommen
+                             (right|left|above|below|mirror), Ausrichtung (start|center|end),
+                             internen Bildschirm ausschalten sobald ein externer da ist (on|off)
   auto                       Profil laden, dessen Anschlüsse genau den angeschlossenen entsprechen
                              (läuft automatisch beim Ein-/Ausstecken; ohne Treffer bleibt die Automatik)
   reset                      Lokale Regeln entfernen (Standard: automatisch rechts daneben)
@@ -105,6 +111,11 @@ write_lua() {
 
 apply() {
     write_lua
+    # Jede Änderung wird für genau dieses Setup gemerkt (auto-<set>.json) und die Display-Eigenschaften
+    # (Skalierung/Modus/Drehung) pro physischem Monitor; benannte Profile haben Vorrang.
+    mkdir -p "$profile_dir"
+    cp "$state_file" "$profile_dir/auto-$(set_key).json"
+    remember_known
     if [[ -n ${MONITORS_DRY_RUN:-} ]]; then cat "$lua_file"; return; fi
     hyprctl reload >/dev/null
     if [[ -x $wallpaper ]]; then ( sleep 0.8; "$wallpaper" apply --quiet ) >/dev/null 2>&1 & disown || true; fi
@@ -181,6 +192,75 @@ layout_only() {
     done
 }
 
+
+
+# --- Standards und Gedächtnis ------------------------------------------------------
+set_key() { names | LC_ALL=C sort | paste -sd, | md5sum | cut -c1-12; }
+desc_of() { live | jq -r --arg n "$1" '.[] | select(.name == $n) | .description'; }
+
+default_get() { # schluessel standardwert
+    local v=""
+    [[ -f $defaults_file ]] && v="$(jq -r --arg k "$1" '.[$k] // empty' "$defaults_file")"
+    printf '%s' "${v:-$2}"
+}
+
+default_set() {
+    mkdir -p "$(dirname "$defaults_file")"
+    [[ -s $defaults_file ]] || echo '{}' >"$defaults_file"
+    local tmp; tmp="$(jq --arg k "$1" --arg v "$2" '.[$k] = $v' "$defaults_file")"
+    printf '%s\n' "$tmp" >"$defaults_file"
+}
+
+# Merkt Auflösung, Skalierung und Drehung jedes angeschlossenen Displays (nach Beschreibung,
+# nicht nach Anschluss – derselbe Monitor an einem anderen Port wird wiedererkannt).
+remember_known() {
+    mkdir -p "$(dirname "$known_file")"
+    [[ -s $known_file ]] || echo '{}' >"$known_file"
+    local n d tmp
+    for n in $(names); do
+        d="$(desc_of "$n")"; [[ -n $d ]] || continue
+        tmp="$(jq --arg d "$d" --argjson s "$(jq --arg n "$n" '.[$n] | {mode, scale, transform}' "$state_file")" '.[$d] = $s' "$known_file")"
+        printf '%s\n' "$tmp" >"$known_file"
+    done
+}
+
+restore_known() {
+    [[ -s $known_file ]] || return 0
+    local n d k
+    for n in $(names); do
+        d="$(desc_of "$n")"; [[ -n $d ]] || continue
+        k="$(jq -c --arg d "$d" '.[$d] // empty' "$known_file")"
+        [[ -n $k ]] || continue
+        set_field "$n" mode "$(jq '.mode' <<<"$k")"
+        set_field "$n" scale "$(jq '.scale' <<<"$k")"
+        set_field "$n" transform "$(jq '.transform' <<<"$k")"
+    done
+}
+
+# Anordnung nach dem eingestellten Standard (für Setups ohne gespeichertes Profil).
+layout_policy() {
+    local placement align internal_off
+    placement="$(default_get placement right)"
+    align="$(default_get align start)"
+    internal_off="$(default_get internal-off off)"
+    restore_known
+    local ordered=() n
+    for n in $(names); do is_internal "$n" && ordered+=("$n"); done
+    for n in $(names); do is_internal "$n" || ordered+=("$n"); done
+    if [[ $placement == mirror ]]; then layout_mirror; return; fi
+    if [[ $internal_off == on && ${#ordered[@]} -gt 1 ]] && ! is_internal "${ordered[-1]}"; then
+        layout_only external; return
+    fi
+    local rel prev="" i
+    case $placement in right) rel=right-of ;; left) rel=left-of ;; above) rel=above ;; below) rel=below ;; esac
+    for i in "${!ordered[@]}"; do
+        n="${ordered[$i]}"
+        set_field "$n" disabled false; set_field "$n" mirror null
+        if [[ -z $prev ]]; then set_field "$n" x 0; set_field "$n" y 0
+        else layout_arrange "$n" "$rel" "$prev" "$align"; fi
+        prev="$n"
+    done
+}
 
 # --- Anordnen ---------------------------------------------------------------------
 # arrange MON RELATION REF [ALIGN]: setzt Position von MON relativ zu REF.
@@ -268,7 +348,7 @@ menu() {
     }
     local entries=$'  Erweitern: nebeneinander (rechts)\n  Erweitern: links\n  Erweitern: darüber\n  Erweitern: darunter
   Spiegeln\n  Nur interner Bildschirm\n  Nur externer Bildschirm\n  Anordnen (relativ platzieren)\n  Skalierung\n  Auflösung\n  Drehen
-  Profil laden\n  Profil speichern\n  Zurücksetzen (automatisch)\n  Status'
+  Standard für neue Monitore\n  Profil laden\n  Profil speichern\n  Zurücksetzen (automatisch)\n  Status'
     local pick; pick="$(printf '%s\n' "$entries" | "${ask[@]}")" || exit 0
     case $pick in
         *"(rechts)"*) "$0" extend right ;;
@@ -293,6 +373,15 @@ menu() {
         *Drehen*) local o t; o="$(choose_output)" || exit 0
             t="$(printf '0 normal\n1 90°\n2 180°\n3 270°\n' | "${ask[@]}" --prompt="Drehung $o ")" || exit 0
             "$0" rotate "$o" "${t%% *}" ;;
+        *Standard*) local k v
+            k="$(printf 'Neue Monitore: rechts\nNeue Monitore: links\nNeue Monitore: darüber\nNeue Monitore: darunter\nNeue Monitore: spiegeln\nIntern aus, wenn extern da\nIntern immer an\nStandard jetzt anwenden\n' | "${ask[@]}" --prompt='Standard ')" || exit 0
+            case $k in
+                *rechts*) "$0" default placement right ;; *links*) "$0" default placement left ;;
+                *darüber*) "$0" default placement above ;; *darunter*) "$0" default placement below ;;
+                *spiegeln*) "$0" default placement mirror ;;
+                *"aus, wenn"*) "$0" default internal-off on ;; *"immer an"*) "$0" default internal-off off ;;
+                *anwenden*) "$0" default apply ;;
+            esac ;;
         *"Profil laden"*) local p; p="$("$0" profile list | "${ask[@]}" --prompt='Profil ')" || exit 0
             "$0" profile load "$p" ;;
         *"Profil speichern"*) local p; p="$(printf '' | "${ask[@]}" --lines=0 --prompt='Profilname ')" || exit 0
@@ -326,7 +415,7 @@ case $cmd in
         mkdir -p "$profile_dir"
         sub="${1:-list}"; name="${2:-}"
         case $sub in
-            list|ls) ls -1 "$profile_dir" 2>/dev/null | sed 's/\.json$//' ;;
+            list|ls) ls -1 "$profile_dir" 2>/dev/null | grep -v '^auto-' | sed 's/\.json$//' ;;
             save) [[ $name =~ ^[A-Za-z0-9_.-]+$ ]] || { echo "Profilname: Buchstaben, Ziffern, _ . -" >&2; exit 2; }
                 ensure_state; cp "$state_file" "$profile_dir/$name.json"; notify "Profil gespeichert" "$name" ;;
             load) [[ -f $profile_dir/${name:-/}.json ]] || { echo "Profil '$name' nicht gefunden." >&2; exit 2; }
@@ -336,13 +425,30 @@ case $cmd in
         esac ;;
     auto)
         current="$(names | LC_ALL=C sort | paste -sd,)"
+        ensure_state
+        # 1. benanntes Profil, 2. automatisch gemerktes Layout, 3. Standard (default placement …)
         for f in "$profile_dir"/*.json; do
-            [[ -f $f ]] || continue
+            [[ -f $f && $(basename "$f") != auto-* ]] || continue
             [[ "$(jq -r 'keys | sort | join(",")' "$f")" == "$current" ]] || continue
-            ensure_state; cp "$f" "$state_file"; apply; exit 0
+            cp "$f" "$state_file"; apply; exit 0
         done
-        # Kein passendes Profil: lokale Regeln eines anderen Setups entfernen
-        if [[ -f $lua_file ]]; then rm -f -- "$lua_file" "$state_file"; [[ -n ${MONITORS_DRY_RUN:-} ]] || hyprctl reload >/dev/null; fi ;;
+        remembered="$profile_dir/auto-$(set_key).json"
+        if [[ -f $remembered ]]; then cp "$remembered" "$state_file"; apply; exit 0; fi
+        layout_policy; apply ;;
+    default)
+        sub="${1:-show}"
+        case $sub in
+            show|"") printf 'placement:    %s\nalign:        %s\ninternal-off: %s\n' \
+                "$(default_get placement right)" "$(default_get align start)" "$(default_get internal-off off)" ;;
+            placement) [[ ${2:-} =~ ^(right|left|above|below|mirror)$ ]] || { echo "placement: right|left|above|below|mirror" >&2; exit 2; }
+                default_set placement "$2" ;;
+            align) [[ ${2:-} =~ ^(start|center|end)$ ]] || { echo "align: start|center|end" >&2; exit 2; }
+                default_set align "$2" ;;
+            internal-off) [[ ${2:-} =~ ^(on|off)$ ]] || { echo "internal-off: on|off" >&2; exit 2; }
+                default_set internal-off "$2" ;;
+            apply) ensure_state; layout_policy; apply ;;
+            *) usage; exit 2 ;;
+        esac ;;
     reset) rm -f -- "$lua_file" "$state_file"; [[ -n ${MONITORS_DRY_RUN:-} ]] || hyprctl reload >/dev/null; notify "Bildschirm-Regeln zurückgesetzt" ;;
     help|-h|--help) usage ;;
     *) usage >&2; exit 2 ;;

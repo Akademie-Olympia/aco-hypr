@@ -57,11 +57,26 @@ Sizes take scale and rotation into account. `map` draws the result, for example:
 +------------------------------++------------------------------+
 ```
 
-### Profiles
+### Remembering layouts and setting defaults
 
-`profile save <name>` stores the current layout together with the set of connected outputs. When Hyprland reports a monitor being plugged in or
-out it calls `monitors.sh auto`: if a profile exists for exactly the connected set it is loaded, otherwise the default rules apply. So an
-“office” profile saved once restores itself every time you dock.
+Every time a monitor is plugged in or out, Hyprland calls `monitors.sh auto`, which chooses the layout in this order:
+
+1. **A named profile** (`profile save office`) for exactly the connected set of outputs.
+2. **The remembered layout** of that set: every change you make with the tool is stored automatically, so a setup you have arranged once comes
+   back by itself the next time you dock – no explicit save needed.
+3. **Your default** for setups it has never seen. Set it once:
+
+```bash
+monitors.sh default                       # show the defaults
+monitors.sh default placement left        # new monitors go left of the laptop: right | left | above | below | mirror
+monitors.sh default align center          # line the edges up at start | center | end
+monitors.sh default internal-off on       # switch the laptop display off while an external one is connected
+monitors.sh default apply                 # apply the default to the current setup right now
+```
+
+Resolution, scale and rotation are remembered **per physical display** (by its make/model/serial), so the same monitor on another port or
+another day keeps its settings. The menu ({kbd}`Super + Shift + D` → “Standard für neue Monitore”) offers the same choices.
+A remembered layout wins over a changed default; use `default apply` to re-lay the current setup with the new default.
 
 ### Files
 
