@@ -47,6 +47,9 @@ monitors.sh [befehl]
                              internen Bildschirm ausschalten sobald ein externer da ist (on|off)
   auto                       Profil laden, dessen Anschlüsse genau den angeschlossenen entsprechen
                              (läuft automatisch beim Ein-/Ausstecken; ohne Treffer bleibt die Automatik)
+  layout < layout.json       Ganzes Layout anwenden: {"DP-1": {"x": 0, "y": 0, "mode": "2560x1440@60",
+                             "scale": 1, "transform": 0, "disabled": false, "mirror": null}, ...};
+                             fehlende Felder bleiben, jedes Feld wird geprüft (für die Einstellungs-App)
   reset                      Lokale Regeln entfernen (Standard: automatisch rechts daneben)
 HELP
 }
@@ -97,6 +100,34 @@ set_field() { # anschluss feld json-wert
 
 require_output() {
     names | grep -qx -- "${1:-}" || { echo "Unbekannter Anschluss: ${1:-}. Verfügbar: $(names | paste -sd' ')" >&2; exit 2; }
+}
+
+# Layout aus JSON (stdin) übernehmen. Jeder Wert wird geprüft, bevor er in die
+# Lua-Datei gelangt: nur bekannte Anschlüsse, Modus WxH[@Hz], Skalierung 0.25-4,
+# Drehung 0-7, ganzzahlige Position, Spiegelquelle ein angeschlossener Monitor.
+layout_from_json() {
+    local checked merged
+    checked="$(jq -e --argjson live "$(live | jq '[.[].name]')" '
+        def fail($m): error("monitors.sh layout: " + $m);
+        if type != "object" then fail("ein Objekt erwartet") else . end
+        | with_entries(
+            .key as $n | .value as $v
+            | if ($live | index($n)) == null then fail("unbekannter Anschluss \($n)") else . end
+            | if ($v | type) != "object" then fail("\($n): Objekt erwartet") else . end
+            | if ($v | has("mode")) and (($v.mode | type) != "string" or ($v.mode | test("^[0-9]+x[0-9]+(@[0-9.]+)?$") | not))
+                then fail("\($n): Modus") else . end
+            | if ($v | has("scale")) and (($v.scale | type) != "number" or $v.scale < 0.25 or $v.scale > 4)
+                then fail("\($n): Skalierung") else . end
+            | if ($v | has("transform")) and (($v.transform | type) != "number" or $v.transform < 0 or $v.transform > 7 or ($v.transform | floor) != $v.transform)
+                then fail("\($n): Drehung") else . end
+            | if ([($v.x // 0), ($v.y // 0)] | map(type == "number" and floor == .) | all | not)
+                then fail("\($n): Position") else . end
+            | if ($v | has("disabled")) and (($v.disabled | type) != "boolean") then fail("\($n): disabled") else . end
+            | if ($v.mirror // null) != null and ($live | index($v.mirror)) == null then fail("\($n): Spiegelquelle") else . end
+            | .value |= with_entries(select(.key | IN("mode", "scale", "transform", "x", "y", "disabled", "mirror")))
+        )')" || { echo "monitors.sh: ungültiges Layout" >&2; exit 2; }
+    merged="$(jq --argjson new "$checked" '. * $new' "$state_file")"
+    printf '%s\n' "$merged" >"$state_file"
 }
 
 # --- Lua erzeugen und anwenden ---------------------------------------------------
@@ -453,6 +484,7 @@ case $cmd in
             apply) ensure_state; layout_policy; apply ;;
             *) usage; exit 2 ;;
         esac ;;
+    layout) ensure_state; layout_from_json; apply ;;
     reset) rm -f -- "$lua_file" "$state_file"; [[ -n ${MONITORS_DRY_RUN:-} ]] || hyprctl reload >/dev/null; notify "Bildschirm-Regeln zurückgesetzt" ;;
     help|-h|--help) usage ;;
     *) usage >&2; exit 2 ;;
