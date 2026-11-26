@@ -27,6 +27,7 @@ The launcher offers **Screenshot (snip)**; in a terminal use `screenshot`.
 | `Alt + Print` | Active window |
 | `Shift + Print` | Active monitor |
 | `Super + Print` | All monitors |
+| `Ctrl + Print` or `Super + Shift + X` | Menu: region, window, monitor, all, 5 s timer |
 
 The PNG is saved to `~/Downloads` and copied to the clipboard immediately. Satty opens floating for annotating with arrows, text and markers.
 `Enter` / `Ctrl+C` copies and saves the edited version; `Ctrl+S` saves. The editor then closes. While typing text, `Enter` first confirms the text.
@@ -36,6 +37,14 @@ The Satty defaults (theme colours, arrow tool, visible toolbars) are generated f
 template in your user copy to adjust them. `SCREENSHOT_DIR` overrides the location, for example `SCREENSHOT_DIR="$HOME/Pictures/Screenshots" screenshot region`.
 More modes: `screenshot window`, `screenshot monitor`, `screenshot full`. Without Satty, capturing, saving and copying still work.
 Window captures show the visible part of the screen, not hidden window contents. No extra background service runs.
+
+### Lock screen, windows and panels
+
+The lock screen (`Super + L`, hyprlock) shows the current wallpaper, slightly dimmed, with the date and a large clock
+at the top and the name and a slim password field at the bottom, always in light text. **Einstellungen > Fenster**
+switches new windows between tiling and floating (centred, as on a Mac; `~/.config/aco/windows.conf`); `Super + V`
+toggles a single window. `Super + A` opens the control centre and `Super + U` the notification centre (aco-swaync).
+`Ctrl + Print` or `Super + Shift + X` opens the screenshot menu (region, window, monitor, all monitors, 5 s timer).
 
 ### Laptop keys
 

@@ -10,3 +10,9 @@ $red = rgba({{red:hex}}ff)
 $yellow = rgba({{yellow:hex}}ff)
 $radius = {{radius}}
 $ui_font = {{ui_font}}
+# The lock screen always uses light text over the darkened wallpaper.
+$lock_fg = rgba({{bar_light_fg:hex}}ff)
+$lock_fg_soft = rgba({{bar_light_fg:hex}}cc)
+$lock_field = {{bar_light_fg:a18}}
+$lock_field_line = {{bar_light_fg:a30}}
+$radius_large = {{radius_large}}
