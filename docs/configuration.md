@@ -21,7 +21,7 @@ The editor defaults live in `~/.config/hypr/satty.toml`:
 ## Monitor manager
 
 `monitors.sh` manages layout, mirroring, arrangement, scale, resolution, rotation and named profiles.
-{kbd}`Super + Shift + D` opens the Fuzzel menu; in a terminal:
+{kbd}`Super + Shift + D` opens the monitor menu; in a terminal:
 
 ```bash
 ~/.config/hypr/monitors.sh status

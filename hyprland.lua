@@ -39,7 +39,7 @@ end
 ---- MY PROGRAMS ----
 ---------------------
 local terminal    = "kitty"
-local menu        = "pkill -x fuzzel || fuzzel"
+local menu        = "aco-menu apps"
 local browser     = "firefox"
 local fileManager = "pcmanfm"
 local tuiFiles    = "kitty -e yazi"
@@ -59,7 +59,7 @@ hl.on("hyprland.start", function()
     -- Colour scheme and fonts for GTK, Firefox and Electron apps (dconf, per login).
     hl.exec_cmd("aco-theme --quiet session")
     hl.exec_cmd("waybar")
-    -- Gespeicherten Default bzw. Monitor-Overrides anwenden (startet hyprpaper bei Bedarf)
+    -- Gespeicherten Default bzw. Monitor-Overrides anwenden (startet swaybg je Monitor)
     hl.exec_cmd(wallpaper .. " apply --quiet")
 end)
 
@@ -184,7 +184,7 @@ hl.animation({ leaf = "workspaces", enabled = true, speed = 3,   bezier = "settl
 -- pixels (rounded corners, shadows) are left alone.
 hl.layer_rule({
     name         = "blur-shell",
-    match        = { namespace = "^(waybar|launcher|swaync-notification-window|swaync-control-center)$" },
+    match        = { namespace = "^(waybar|rofi|swaync-notification-window|swaync-control-center)$" },
     blur         = theme.blur,
     ignore_alpha = 0.2,
 })

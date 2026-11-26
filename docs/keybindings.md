@@ -13,11 +13,11 @@ do not appear here – they only apply locally.
 | {kbd}`Super + Enter` | Open terminal |
 | {kbd}`Super + Q` | Open terminal |
 | {kbd}`Super + Shift + Enter` | Terminal with tmux session `main` |
-| {kbd}`Super + Space` | Application launcher (Fuzzel) |
-| {kbd}`Alt + Space` | Application launcher (Fuzzel) |
-| {kbd}`Super + D` | Application launcher (Fuzzel) |
-| {kbd}`Super + R` | Application launcher (Fuzzel) |
-| {kbd}`Super + A` | Application launcher (Fuzzel) |
+| {kbd}`Super + Space` | Application launcher (rofi, `aco-menu apps`) |
+| {kbd}`Alt + Space` | Application launcher (rofi, `aco-menu apps`) |
+| {kbd}`Super + D` | Application launcher (rofi, `aco-menu apps`) |
+| {kbd}`Super + R` | Application launcher (rofi, `aco-menu apps`) |
+| {kbd}`Super + A` | Application launcher (rofi, `aco-menu apps`) |
 | {kbd}`Super + B` | Open browser |
 | {kbd}`Super + E` | File manager (PCManFM) |
 | {kbd}`Super + Y` | Terminal file manager (Yazi) |
@@ -28,6 +28,9 @@ do not appear here – they only apply locally.
 | --- | --- |
 | {kbd}`Super + L` | Lock screen |
 | {kbd}`Super + Esc` | Power menu |
+| {kbd}`Super + I` | Settings (appearance, wallpaper, Wi-Fi, sound, displays, drivers …) |
+| {kbd}`Super + U` | Notification centre |
+| {kbd}`Super + Shift + T` | Toggle light/dark |
 | {kbd}`Super + Shift + B` | Restart Waybar |
 | {kbd}`Super + Shift + W` | Wallpaper picker |
 | {kbd}`Super + Shift + D` | Monitor manager (layout, mirror, scale, profiles) |

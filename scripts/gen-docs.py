@@ -22,7 +22,10 @@ TARGET = ROOT / "docs" / "keybindings.md"
 RULES = [
     (r"exec_cmd\(terminal\)", "Programs", "Open terminal"),
     (r'exec_cmd\("kitty -e tmux', "Programs", "Terminal with tmux session `main`"),
-    (r"exec_cmd\(menu\)", "Programs", "Application launcher (Fuzzel)"),
+    (r"exec_cmd\(menu\)", "Programs", "Application launcher (rofi, `aco-menu apps`)"),
+    (r"exec_cmd\(settings\)", "System", "Settings (appearance, wallpaper, Wi-Fi, sound, displays, drivers …)"),
+    (r"swaync-client -t", "System", "Notification centre"),
+    (r"aco-theme mode toggle", "System", "Toggle light/dark"),
     (r"exec_cmd\(browser\)", "Programs", "Open browser"),
     (r"exec_cmd\(fileManager\)", "Programs", "File manager (PCManFM)"),
     (r"exec_cmd\(tuiFiles\)", "Programs", "Terminal file manager (Yazi)"),

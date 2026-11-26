@@ -1,6 +1,3 @@
 #!/usr/bin/env bash
-exec fuzzel --dmenu --password \
-    --prompt="󰌾  Passwort: " \
-    --placeholder="Sudo-Passwort für zsh & tmux..." \
-    --width=38 \
-    --lines=0
+# SUDO_ASKPASS helper: asks for the password in the desktop menu, prints it.
+exec aco-menu --password --lines 0 --prompt "󰌾" --placeholder "Passwort für sudo" --width 30 </dev/null
