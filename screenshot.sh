@@ -4,7 +4,7 @@ set -euo pipefail
 umask 077
 
 usage() {
-    printf 'Usage: screenshot [region|window|monitor|full|menu]\n  region   Bereich auswählen (Standard)\n  window   Aktives Fenster aufnehmen\n  monitor  Aktiven Bildschirm aufnehmen\n  full     Alle Bildschirme aufnehmen\n  menu     Auswahl wie bei macOS (Bereich, Fenster, Bildschirm, alle, mit Timer)\n\nAufnahmen werden gespeichert, kopiert und mit Satty geöffnet.\nSCREENSHOT_DIR überschreibt den Speicherort (Standard: ~/Downloads).\n'
+    printf 'Usage: screenshot [region|window|monitor|full|menu]\n  region   Bereich auswählen (Standard)\n  window   Aktives Fenster aufnehmen\n  monitor  Aktiven Bildschirm aufnehmen\n  full     Alle Bildschirme aufnehmen\n  menu     Auswahl wie bei macOS (Bereich, Fenster, Bildschirm, alle, mit Timer)\n\nZiel, Ordner, Editor und Mitteilung: ~/.config/aco/screenshot.conf (Einstellungen > Bildschirmfotos).\nSCREENSHOT_DIR überschreibt den Ordner.\n'
 }
 
 # Auswahlmenü: die gewählte Aufnahme startet erst, wenn das Menü verschwunden ist.
@@ -68,33 +68,64 @@ elif [[ "$mode" == monitor ]]; then
     args=(-o "$monitor")
 fi
 
-output_dir="${SCREENSHOT_DIR:-$HOME/Downloads}"
+# Where the capture goes, from ~/.config/aco/screenshot.conf (Einstellungen >
+# Bildschirmfotos):
+#   target = both | clipboard | folder   copy, save, or both (default both)
+#   folder = ~/Bilder/Bildschirmfotos    where saved captures go
+#   editor = yes | no                    open Satty to annotate (default yes)
+#   notify = yes | no                    show a notification with a preview (default yes)
+# SCREENSHOT_DIR overrides the folder.
+conf_get() { # schluessel standardwert
+    local value
+    value="$(awk -F ' *= *' -v k="$1" '$1 == k { v = $2 } END { print v }' \
+        "${XDG_CONFIG_HOME:-$HOME/.config}/aco/screenshot.conf" 2>/dev/null)"
+    printf '%s' "${value:-$2}"
+}
+pictures="$(xdg-user-dir PICTURES 2>/dev/null || true)"
+[[ -n "$pictures" && "$pictures" != "$HOME" ]] || pictures="$HOME/Pictures"
+target="$(conf_get target both)"
+folder="$(conf_get folder "$pictures/Bildschirmfotos")"
+folder="${SCREENSHOT_DIR:-${folder/#\~/$HOME}}"
+editor="$(conf_get editor yes)"
+notify="$(conf_get notify yes)"
+case "$target" in both|clipboard|folder) ;; *) target=both ;; esac
+
+# Clipboard only: the file is a short-lived working copy in the runtime directory.
+if [[ "$target" == clipboard ]]; then
+    output_dir="${XDG_RUNTIME_DIR:-/tmp}/aco-screenshot"
+else
+    output_dir="$folder"
+fi
 mkdir -p -- "$output_dir"
-file="$(mktemp "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S)-XXXXXX.png")"
+file="$(mktemp "$output_dir/Bildschirmfoto-$(date +%Y-%m-%d-%H%M%S)-XXXX.png")"
 if ! grim "${args[@]}" "$file"; then
     rm -f -- "$file"
     printf 'Screenshot: Aufnahme fehlgeschlagen.\n' >&2
     exit 1
 fi
 
-if ! wl-copy --type image/png < "$file"; then
-    printf 'Screenshot gespeichert: %s (Zwischenablage fehlgeschlagen).\n' "$file" >&2
-    exit 1
+if [[ "$target" != folder ]] && ! wl-copy --type image/png < "$file"; then
+    printf 'Screenshot: Zwischenablage fehlgeschlagen (%s).\n' "$file" >&2
 fi
 
-if command -v satty >/dev/null 2>&1; then
+if [[ "$notify" == yes ]] && command -v notify-send >/dev/null 2>&1; then
+    case "$target" in
+        clipboard) body="In der Zwischenablage" ;;
+        folder) body="Gespeichert in ${output_dir/#$HOME/\~}" ;;
+        *) body="Kopiert und gespeichert in ${output_dir/#$HOME/\~}" ;;
+    esac
+    LC_ALL=C.UTF-8 notify-send -a Bildschirmfoto -i "$file" "Bildschirmfoto" "$body" >/dev/null 2>&1 || true
+fi
+
+if [[ "$editor" == yes ]] && command -v satty >/dev/null 2>&1; then
     satty_args=()
     satty_config="${XDG_CONFIG_HOME:-$HOME/.config}/aco/theme/hypr/satty.toml"
     if [[ -f "$satty_config" ]]; then
         satty_args+=(--config "$satty_config")
     else
-        # Auch ohne aktivierte Defaults bleibt der bisherige Workflow verfügbar.
         satty_args+=(--copy-command 'wl-copy --type image/png' --save-after-copy \
             --early-exit all --initial-tool arrow)
     fi
     # Enter/Strg+C kopiert die bearbeitete Version und speichert sie zusätzlich.
     exec satty "${satty_args[@]}" --filename "$file" --output-filename "$file"
 fi
-
-printf 'Screenshot gespeichert und kopiert: %s\n' "$file"
-printf 'Für Pfeile, Text und Markierungen: sudo pacman -S --needed satty\n' >&2
