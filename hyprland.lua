@@ -56,6 +56,8 @@ local screenshot     = string.format("%q", config_home .. "/hypr/screenshot.sh")
 ---- AUTOSTART ----
 -------------------
 hl.on("hyprland.start", function()
+    -- Colour scheme and fonts for GTK, Firefox and Electron apps (dconf, per login).
+    hl.exec_cmd("aco-theme --quiet session")
     hl.exec_cmd("waybar")
     -- Gespeicherten Default bzw. Monitor-Overrides anwenden (startet hyprpaper bei Bedarf)
     hl.exec_cmd(wallpaper .. " apply --quiet")
