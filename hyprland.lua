@@ -45,7 +45,7 @@ workspaces.apply_rules()
 local terminal    = "kitty"
 local menu        = "aco-menu apps"
 local browser     = "firefox"
-local fileManager = "pcmanfm"
+local fileManager = "dolphin"
 local tuiFiles    = "kitty -e yazi"
 local lock           = "hyprlock"
 local powermenu      = home .. "/.config/hypr/powermenu.sh"
@@ -67,6 +67,8 @@ hl.on("hyprland.start", function()
     workspaces.apply_rules()
     -- Control centre and notification centre share one swaync (aco-swaync).
     hl.exec_cmd(panel .. " setup")
+    -- Dolphin, Celluloid and Amberol as default apps, unless you chose others.
+    hl.exec_cmd(config_home .. "/hypr/defaults.sh")
     -- Colour scheme and fonts for GTK, Firefox and Electron apps (dconf, per login).
     hl.exec_cmd("aco-theme --quiet session")
     hl.exec_cmd("waybar")
@@ -91,6 +93,14 @@ end)
 ---- ENVIRONMENT VARIABLES ----
 -------------------------------
 hl.env("XCURSOR_SIZE", "20")
+-- Qt and KDE apps (Dolphin) take palette, style and fonts from qt6ct (aco-qt).
+-- KDE apps also apply a colour scheme of their own: the rendered "ACO" scheme
+-- (kdeglobals and color-schemes/) is offered as a system default, so that
+-- ~/.config/kdeglobals still wins.
+local qt_theme = config_home .. "/aco/theme/qt6ct"
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
+hl.env("XDG_CONFIG_DIRS", qt_theme .. ":" .. (os.getenv("XDG_CONFIG_DIRS") or "/etc/xdg"))
+hl.env("XDG_DATA_DIRS", qt_theme .. ":" .. (os.getenv("XDG_DATA_DIRS") or "/usr/local/share:/usr/share"))
 hl.env("HYPRCURSOR_SIZE", "20")
 
 
