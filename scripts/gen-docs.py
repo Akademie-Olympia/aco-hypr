@@ -29,7 +29,7 @@ RULES = [
     (r"exec_cmd\(screenshot .. \" menu\"\)", "Screenshots", "Screenshot menu (region, window, monitor, all, timer)"),
     (r"aco-theme mode toggle", "System", "Toggle light/dark"),
     (r"exec_cmd\(browser\)", "Programs", "Open browser"),
-    (r"exec_cmd\(fileManager\)", "Programs", "File manager (PCManFM)"),
+    (r"exec_cmd\(fileManager\)", "Programs", "File manager (Dolphin)"),
     (r"exec_cmd\(tuiFiles\)", "Programs", "Terminal file manager (Yazi)"),
     (r"exec_cmd\(lock\)", "System", "Lock screen"),
     (r"exec_cmd\(powermenu\)", "System", "Power menu"),

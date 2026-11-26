@@ -9,7 +9,7 @@ Why Hyprland is built the way it is, what it needs from other ACO components, wh
 - Responsive instead of pretty: no animations, blur, shadows or gaps – maximum screen space.
 - Several monitors are the normal case: focus and window jumps, window slots (`Super + F1…F4`), workspace swap, a monitor tool with profiles; new monitors arrange themselves to the right.
 - The configuration is **Lua**; `scripts/gen-docs.py` generates the key list straight from it so documentation and bindings cannot drift apart.
-- It pulls the other desktop packages (terminal, menu, bar, wallpaper, tmux, Yazi, PCManFM, browser) in as dependencies so an installation works immediately.
+- It pulls the other desktop packages (terminal, menu, bar, wallpaper, tmux, Yazi, Dolphin, Celluloid, Amberol, browser) in as dependencies so an installation works immediately.
 
 ## What this configuration needs from others
 
@@ -21,7 +21,7 @@ Why Hyprland is built the way it is, what it needs from other ACO components, wh
 | [Wallpaper](https://aco-docs.readthedocs.io/en/latest/wallpaper/) | Backgrounds at start and on `monitor.added`; `Super + Shift + W` |
 | [tmux](https://aco-tmux.readthedocs.io/en/latest/) | `Super + Shift + Enter` opens Kitty with the tmux session `main` |
 | [Yazi](https://aco-docs.readthedocs.io/en/latest/yazi/) | `Super + Y` opens Yazi in a terminal |
-| [PCManFM](https://aco-docs.readthedocs.io/en/latest/pcmanfm/) | `Super + E` opens the graphical file manager |
+| Dolphin (themed through aco-qt) | `Super + E` opens the graphical file manager |
 
 ## Who needs this configuration
 
@@ -57,7 +57,6 @@ From the `PKGBUILD` of this component; “Tested with” is the version installe
 | `aco-arch-dotfiles-wallpaper` | – | 0.3.0.r8.gb16dcdd29d0f-64 | ACO component Wallpaper |
 | `aco-arch-dotfiles-tmux` | – | 0.3.0.r42.gbc5a74a88b89-64 | ACO component tmux |
 | `aco-arch-dotfiles-yazi` | – | 0.3.0.r8.g9ba203101bd0-64 | ACO component Yazi |
-| `aco-arch-dotfiles-pcmanfm` | – | 0.3.0.r8.g787ed3acd450-64 | ACO component PCManFM |
 | `firefox` | – | 160.0.1-1 | Default browser (`Super + B`) |
 | `psmisc` | – | 23.7-2 | `killall`, used to reload Waybar |
 | `wireplumber` | – | 0.5.19-1 | `wpctl` for the volume keys and the Waybar volume module |

@@ -29,12 +29,12 @@ The launcher offers **Screenshot (snip)**; in a terminal use `screenshot`.
 | `Super + Print` | All monitors |
 | `Ctrl + Print` or `Super + Shift + X` | Menu: region, window, monitor, all, 5 s timer |
 
-The PNG is saved to `~/Downloads` and copied to the clipboard immediately. Satty opens floating for annotating with arrows, text and markers.
+By default the PNG is copied to the clipboard and saved to `~/Pictures/Bildschirmfotos` (your XDG pictures folder), a notification shows a preview, and Satty opens floating for annotating with arrows, text and markers. **Einstellungen > Bildschirmfotos** (or `~/.config/aco/screenshot.conf`: `target = both|clipboard|folder`, `folder`, `editor = yes|no`, `notify = yes|no`) changes where captures go and whether the editor opens.
 `Enter` / `Ctrl+C` copies and saves the edited version; `Ctrl+S` saves. The editor then closes. While typing text, `Enter` first confirms the text.
 `Esc` cancels the selection; in the editor the already saved original capture is kept.
 
 The Satty defaults (theme colours, arrow tool, visible toolbars) are generated from `aco-theme/satty.toml.tpl`; change the
-template in your user copy to adjust them. `SCREENSHOT_DIR` overrides the location, for example `SCREENSHOT_DIR="$HOME/Pictures/Screenshots" screenshot region`.
+template in your user copy to adjust them. `SCREENSHOT_DIR` overrides the folder for one call.
 More modes: `screenshot window`, `screenshot monitor`, `screenshot full`. Without Satty, capturing, saving and copying still work.
 Window captures show the visible part of the screen, not hidden window contents. No extra background service runs.
 
@@ -47,6 +47,13 @@ toggles a single window. The Arch logo in the bar (or `Super + F12`) opens the s
 battery the energy menu (charge, time left, draw, health, busy apps, energy modes through power-profiles-daemon over
 D-Bus). `Super + A` opens the control centre and `Super + U` the notification centre (aco-swaync).
 `Ctrl + Print` or `Super + Shift + X` opens the screenshot menu (region, window, monitor, all monitors, 5 s timer).
+
+### Apps
+
+Dolphin (files), Celluloid (video and films, mpv underneath) and Amberol (music) come with the package and follow the
+theme: the GTK 4 apps through aco-gtk4, Dolphin through aco-qt (`QT_QPA_PLATFORMTHEME=qt6ct`). At login
+`defaults.sh` makes them the default apps for folders, video and audio, but only for types you have not chosen
+yourself.
 
 ### Laptop keys
 

@@ -18,7 +18,7 @@ do not appear here – they only apply locally.
 | {kbd}`Super + D` | Application launcher (rofi, `aco-menu apps`) |
 | {kbd}`Super + R` | Application launcher (rofi, `aco-menu apps`) |
 | {kbd}`Super + B` | Open browser |
-| {kbd}`Super + E` | File manager (PCManFM) |
+| {kbd}`Super + E` | File manager (Dolphin) |
 | {kbd}`Super + Y` | Terminal file manager (Yazi) |
 
 ## System
