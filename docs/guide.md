@@ -52,8 +52,8 @@ The primary modifier key (`SUPER`) is the **Windows / Super key**.
 | <kbd>Super</kbd> + <kbd>Return</kbd> *(or <kbd>Super</kbd> + <kbd>Q</kbd>)* | `kitty` | Open default terminal ([Kitty](https://aco-kitty.readthedocs.io/en/latest/)) |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> | `kitty -e tmux new-session -A -s main` | Open terminal attached to persistent [tmux](https://aco-tmux.readthedocs.io/en/latest/) session `main` |
 | <kbd>Super</kbd> + <kbd>B</kbd> | `firefox` | Launch web browser (**Firefox**) |
-| <kbd>Super</kbd> + <kbd>E</kbd> | `pcmanfm` | Open GUI file manager (**PCManFM** in Catppuccin Mocha GTK theme) |
-| <kbd>Super</kbd> + <kbd>Y</kbd> | `kitty -e yazi` | Open TUI file manager (**Yazi** in Catppuccin Mocha flavor) |
+| <kbd>Super</kbd> + <kbd>E</kbd> | `pcmanfm` | Open GUI file manager (**PCManFM**, themed by aco-theme) |
+| <kbd>Super</kbd> + <kbd>Y</kbd> | `kitty -e yazi` | Open TUI file manager (**Yazi**) |
 | <kbd>Super</kbd> + <kbd>L</kbd> | `hyprlock` | Lock screen immediately |
 | <kbd>Super</kbd> + <kbd>Escape</kbd> | `~/.config/hypr/powermenu.sh` | Open top-right Fuzzel Power Menu (Shutdown, Reboot, Suspend, Lock, Logout) |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> | `killall -SIGUSR2 waybar \|\| ...` | Reload or restart **Waybar** |
