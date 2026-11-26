@@ -43,7 +43,9 @@ Window captures show the visible part of the screen, not hidden window contents.
 The lock screen (`Super + L`, hyprlock) shows the current wallpaper, slightly dimmed, with the date and a large clock
 at the top and the name and a slim password field at the bottom, always in light text. **Einstellungen > Fenster**
 switches new windows between tiling and floating (centred, as on a Mac; `~/.config/aco/windows.conf`); `Super + V`
-toggles a single window. `Super + A` opens the control centre and `Super + U` the notification centre (aco-swaync).
+toggles a single window. The Arch logo in the bar (or `Super + F12`) opens the system menu (`systemmenu.sh`), the
+battery the energy menu (charge, time left, draw, health, busy apps, energy modes through power-profiles-daemon over
+D-Bus). `Super + A` opens the control centre and `Super + U` the notification centre (aco-swaync).
 `Ctrl + Print` or `Super + Shift + X` opens the screenshot menu (region, window, monitor, all monitors, 5 s timer).
 
 ### Laptop keys

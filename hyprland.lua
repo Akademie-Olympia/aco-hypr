@@ -49,6 +49,7 @@ local fileManager = "pcmanfm"
 local tuiFiles    = "kitty -e yazi"
 local lock           = "hyprlock"
 local powermenu      = home .. "/.config/hypr/powermenu.sh"
+local systemmenu     = home .. "/.config/hypr/systemmenu.sh"
 local settings       = home .. "/.config/hypr/settings.sh"
 local windowswitcher = home .. "/.config/hypr/windowswitcher.sh"
 local wallpaper      = home .. "/.config/wallpaper/wallpaper.sh"
@@ -251,6 +252,7 @@ hl.bind(mainMod .. " + E",              hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + Y",              hl.dsp.exec_cmd(tuiFiles))
 hl.bind(mainMod .. " + L",              hl.dsp.exec_cmd(lock))
 hl.bind(mainMod .. " + Escape",    hl.dsp.exec_cmd(powermenu))
+hl.bind(mainMod .. " + F12",       hl.dsp.exec_cmd(systemmenu))
 hl.bind(mainMod .. " + I",         hl.dsp.exec_cmd(settings))
 hl.bind(mainMod .. " + U",         hl.dsp.exec_cmd(panel .. " notifications"))
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("aco-theme mode toggle"))
