@@ -4,8 +4,24 @@ set -euo pipefail
 umask 077
 
 usage() {
-    printf 'Usage: screenshot [region|window|monitor|full]\n  region   Bereich auswählen (Standard)\n  window   Aktives Fenster aufnehmen\n  monitor  Aktiven Bildschirm aufnehmen\n  full     Alle Bildschirme aufnehmen\n\nAufnahmen werden gespeichert, kopiert und mit Satty geöffnet.\nSCREENSHOT_DIR überschreibt den Speicherort (Standard: ~/Downloads).\n'
+    printf 'Usage: screenshot [region|window|monitor|full|menu]\n  region   Bereich auswählen (Standard)\n  window   Aktives Fenster aufnehmen\n  monitor  Aktiven Bildschirm aufnehmen\n  full     Alle Bildschirme aufnehmen\n  menu     Auswahl wie bei macOS (Bereich, Fenster, Bildschirm, alle, mit Timer)\n\nAufnahmen werden gespeichert, kopiert und mit Satty geöffnet.\nSCREENSHOT_DIR überschreibt den Speicherort (Standard: ~/Downloads).\n'
 }
+
+# Auswahlmenü: die gewählte Aufnahme startet erst, wenn das Menü verschwunden ist.
+if [[ "${1:-}" == menu ]]; then
+    choice="$(printf '%s\n' "󰩭   Bereich auswählen" "󰖯   Aktives Fenster" "󰍹   Aktiver Bildschirm" \
+        "󰍺   Alle Bildschirme" "󰔛   Bildschirm in 5 Sekunden" |
+        aco-menu --prompt "󰹑" --placeholder "Bildschirmfoto" --width 28 --lines 5)" || exit 0
+    sleep 0.3
+    case "$choice" in
+        *Bereich*) exec "$0" region ;;
+        *Fenster*) exec "$0" window ;;
+        *"5 Sekunden"*) sleep 5; exec "$0" monitor ;;
+        *"Aktiver Bildschirm"*) exec "$0" monitor ;;
+        *"Alle"*) exec "$0" full ;;
+    esac
+    exit 0
+fi
 
 case "${1:-region}" in
     region|window|monitor|full) mode="${1:-region}" ;;

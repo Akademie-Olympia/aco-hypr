@@ -55,6 +55,7 @@ local wallpaper      = home .. "/.config/wallpaper/wallpaper.sh"
 local monitors       = home .. "/.config/hypr/monitors.sh"
 local screenshot     = string.format("%q", config_home .. "/hypr/screenshot.sh")
 local osd            = string.format("%q", config_home .. "/hypr/osd.sh")
+local panel          = string.format("%q", config_home .. "/swaync/panel.sh")
 
 
 -------------------
@@ -63,6 +64,8 @@ local osd            = string.format("%q", config_home .. "/hypr/osd.sh")
 hl.on("hyprland.start", function()
     -- Monitors are only known now; bind the workspace groups to them.
     workspaces.apply_rules()
+    -- Control centre and notification centre share one swaync (aco-swaync).
+    hl.exec_cmd(panel .. " setup")
     -- Colour scheme and fonts for GTK, Firefox and Electron apps (dconf, per login).
     hl.exec_cmd("aco-theme --quiet session")
     hl.exec_cmd("waybar")
@@ -242,14 +245,14 @@ hl.bind(mainMod .. " + space",          hl.dsp.exec_cmd(menu))
 hl.bind("ALT + space",             hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + D",         hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + R",         hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. " + A",         hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + A",         hl.dsp.exec_cmd(panel .. " control"))
 hl.bind(mainMod .. " + B",              hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + E",              hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + Y",              hl.dsp.exec_cmd(tuiFiles))
 hl.bind(mainMod .. " + L",              hl.dsp.exec_cmd(lock))
 hl.bind(mainMod .. " + Escape",    hl.dsp.exec_cmd(powermenu))
 hl.bind(mainMod .. " + I",         hl.dsp.exec_cmd(settings))
-hl.bind(mainMod .. " + U",         hl.dsp.exec_cmd("swaync-client -t -sw"))
+hl.bind(mainMod .. " + U",         hl.dsp.exec_cmd(panel .. " notifications"))
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("aco-theme mode toggle"))
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("pkill -USR2 -x waybar || waybar"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd(wallpaper .. " tui"))
@@ -631,6 +634,8 @@ hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd(screenshot .. " region"))
 hl.bind(mainMod .. " + Print",     hl.dsp.exec_cmd(screenshot .. " full"))
 hl.bind("ALT + Print",             hl.dsp.exec_cmd(screenshot .. " window"))
 hl.bind("SHIFT + Print",           hl.dsp.exec_cmd(screenshot .. " monitor"))
+hl.bind("CTRL + Print",            hl.dsp.exec_cmd(screenshot .. " menu"))
+hl.bind(mainMod .. " + SHIFT + X", hl.dsp.exec_cmd(screenshot .. " menu"))
 
 -- Multimedia & Helligkeit (Laptop-Funktionstasten), mit kurzer Anzeige (osd.sh)
 hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd(osd .. " volume up"),     { locked = true, repeating = true })
@@ -644,6 +649,28 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(osd .. " brightness down"), { l
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
 --------------------------------
+-- Fenster-Modus (Einstellungen > Fenster, ~/.config/aco/windows.conf):
+-- "tile" ordnet neue Fenster als Kacheln an, "float" lässt sie frei schweben
+-- und zentriert sie, wie auf einem Mac. Super + V schaltet ein Fenster um.
+local function window_mode()
+    local file = io.open(config_home .. "/aco/windows.conf", "r")
+    if not file then
+        return "tile"
+    end
+    local mode = (file:read("*a") or ""):match("mode%s*=%s*(%a+)")
+    file:close()
+    return mode == "float" and "float" or "tile"
+end
+
+if window_mode() == "float" then
+    hl.window_rule({
+        name   = "float-everything",
+        match  = { class = ".*" },
+        float  = true,
+        center = true,
+    })
+end
+
 hl.window_rule({
     name  = "screenshot-editor",
     match = { class = "^(com\\.gabm\\.satty|org\\.satty\\.satty)$" },

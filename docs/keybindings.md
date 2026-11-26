@@ -17,7 +17,6 @@ do not appear here – they only apply locally.
 | {kbd}`Alt + Space` | Application launcher (rofi, `aco-menu apps`) |
 | {kbd}`Super + D` | Application launcher (rofi, `aco-menu apps`) |
 | {kbd}`Super + R` | Application launcher (rofi, `aco-menu apps`) |
-| {kbd}`Super + A` | Application launcher (rofi, `aco-menu apps`) |
 | {kbd}`Super + B` | Open browser |
 | {kbd}`Super + E` | File manager (PCManFM) |
 | {kbd}`Super + Y` | Terminal file manager (Yazi) |
@@ -26,6 +25,7 @@ do not appear here – they only apply locally.
 
 | Key | Action |
 | --- | --- |
+| {kbd}`Super + A` | Control centre (toggles, sliders, media) |
 | {kbd}`Super + L` | Lock screen |
 | {kbd}`Super + Esc` | Power menu |
 | {kbd}`Super + I` | Settings (appearance, wallpaper, Wi-Fi, sound, displays, drivers …) |
@@ -132,6 +132,8 @@ do not appear here – they only apply locally.
 | {kbd}`Super + Print` | Capture all monitors |
 | {kbd}`Alt + Print` | Capture the active window |
 | {kbd}`Shift + Print` | Capture the active monitor |
+| {kbd}`Ctrl + Print` | Screenshot menu (region, window, monitor, all, timer) |
+| {kbd}`Super + Shift + X` | Screenshot menu (region, window, monitor, all, timer) |
 
 ## Media
 

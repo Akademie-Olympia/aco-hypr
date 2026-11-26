@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ============================================================================
 # EINSTELLUNGEN (Super + I): ein durchsuchbarer Hub für das ganze System.
-#   settings.sh [seite]   seite = appearance | wallpaper | wifi | bluetooth |
-#                         sound | camera | displays | power | notifications |
-#                         system | keys | update
+#   settings.sh [seite]   seite = appearance | bar | windows | wallpaper | wifi |
+#                         bluetooth | sound | camera | displays | power |
+#                         notifications | system | keys | update
 # Jede Seite ist ein aco-menu; Einträge erscheinen nur, wenn ihr Werkzeug
 # installiert ist. Esc auf einer Unterseite führt zurück zur Übersicht.
 # ============================================================================
@@ -48,6 +48,7 @@ page_main() {
     page=$({
         row "󰔎   Erscheinungsbild" appearance
         row "󰸉   Hintergrundbild" wallpaper
+        row "󰕮   Fenster" windows
         if have nmcli; then row "󰤨   WLAN & Netzwerk" wifi; fi
         if have bluetoothctl; then row "󰂯   Bluetooth" bluetooth; fi
         if have pactl; then row "󰕾   Ton" sound; fi
@@ -74,11 +75,13 @@ page_appearance() {
         if [[ $transparency == on ]]; then row "󰂵   Transparenz ausschalten" "transparency off"
         else row "󰂵   Transparenz einschalten" "transparency on"; fi
         row "󰏘   Akzentfarbe" accent
+        row "󰍜   Menüleiste …" bar
         row "󰉼   Theme · $theme" theme
         row "󰷈   Eigene Anpassungen bearbeiten" edit
     } | pick "󰔎" "Erscheinungsbild" --width 30) || back $?
     case $choice in
         accent) page_accent ;;
+        bar) page_bar ;;
         theme)
             choice=$(aco-theme list | sed -n 's/^themes: *//p' | tr ' ' '\n' | sed '/^$/d' |
                 while read -r t; do row "$t" "$t"; done | pick "󰉼" "Theme") || back $? appearance
@@ -97,6 +100,49 @@ page_accent() {
         row "<span foreground='$color'>●</span>   ${label[$name]}" "$name"
     done | pick "󰏘" "Akzentfarbe" --markup --width 24) || back $? appearance
     aco-theme accent "$choice"
+}
+
+# Menüleiste: Schrift passend zum Hintergrundbild oder fest hell/dunkel, und wie
+# stark sie hinterlegt ist. Beides schreibt aco-theme (bar_text, bar_opacity).
+page_bar() {
+    local text opacity choice mark
+    text=$(aco-theme get bar_text)
+    opacity=$(aco-theme get bar_opacity)
+    mark() { [[ $1 == "$2" ]] && printf '  ✓'; return 0; }
+    choice=$({
+        row "󰔎   Schrift automatisch (passend zum Bild)$(mark "$text" auto)" "text auto"
+        row "󰖨   Schrift hell$(mark "$text" light)" "text light"
+        row "󰖔   Schrift dunkel$(mark "$text" dark)" "text dark"
+        row "󰝤   Hintergrund: keiner$(mark "$opacity" 0)" "opacity 0"
+        row "󰝤   Hintergrund: leicht getönt$(mark "$opacity" 0.25)" "opacity 0.25"
+        row "󰝤   Hintergrund: getönt$(mark "$opacity" 0.5)" "opacity 0.5"
+        row "󰝤   Hintergrund: kräftig$(mark "$opacity" 0.8)" "opacity 0.8"
+    } | pick "󰍜" "Menüleiste" --width 34 --lines 7 \
+        --message "Gilt bei eingeschalteter Transparenz; ohne sie ist die Leiste deckend") || back $? appearance
+    read -ra args <<<"$choice"
+    aco-theme --quiet bar "${args[@]}"
+    page_bar
+}
+
+# Fenster-Modus: Kacheln (Tiling) oder frei schwebend wie auf einem Mac. Gilt für
+# neu geöffnete Fenster; Super + V schaltet ein einzelnes Fenster um.
+page_windows() {
+    local file=$config_home/aco/windows.conf mode choice
+    mode=$(awk -F ' *= *' '$1 == "mode" { print $2 }' "$file" 2>/dev/null)
+    [[ $mode == float ]] || mode=tile
+    choice=$({
+        if [[ $mode == tile ]]; then
+            row "󰕰   Kacheln (Tiling)  ✓" tile
+            row "󰖲   Frei schwebend (Floating)" float
+        else
+            row "󰕰   Kacheln (Tiling)" tile
+            row "󰖲   Frei schwebend (Floating)  ✓" float
+        fi
+    } | pick "󰕮" "Fenster" --width 34 --message "Gilt für neue Fenster · Super + V schaltet ein Fenster um") || back $?
+    mkdir -p "${file%/*}"
+    printf '# Written by the settings hub (Einstellungen > Fenster).\nmode = %s\n' "$choice" >"$file"
+    hyprctl reload >/dev/null
+    notify "Fenster" "$([[ $choice == float ]] && echo "Neue Fenster schweben frei" || echo "Neue Fenster werden gekachelt")"
 }
 
 # --- Hintergrund und Bildschirme -----------------------------------------------
