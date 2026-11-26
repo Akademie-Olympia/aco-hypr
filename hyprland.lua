@@ -34,6 +34,10 @@ if monitor_file then
     dofile(monitor_config)
 end
 
+-- Workspace groups per monitor (Kreise in der Leiste), see workspaces.lua.
+local workspaces = dofile(config_home .. "/hypr/workspaces.lua")
+workspaces.apply_rules()
+
 
 ---------------------
 ---- MY PROGRAMS ----
@@ -50,12 +54,15 @@ local windowswitcher = home .. "/.config/hypr/windowswitcher.sh"
 local wallpaper      = home .. "/.config/wallpaper/wallpaper.sh"
 local monitors       = home .. "/.config/hypr/monitors.sh"
 local screenshot     = string.format("%q", config_home .. "/hypr/screenshot.sh")
+local osd            = string.format("%q", config_home .. "/hypr/osd.sh")
 
 
 -------------------
 ---- AUTOSTART ----
 -------------------
 hl.on("hyprland.start", function()
+    -- Monitors are only known now; bind the workspace groups to them.
+    workspaces.apply_rules()
     -- Colour scheme and fonts for GTK, Firefox and Electron apps (dconf, per login).
     hl.exec_cmd("aco-theme --quiet session")
     hl.exec_cmd("waybar")
@@ -67,11 +74,15 @@ end)
 -- Passt ein gespeichertes Profil (monitors.sh profile save) zu den angeschlossenen Bildschirmen,
 -- wird es automatisch geladen; sonst gelten die Standardregeln.
 hl.on("monitor.added", function()
+    workspaces.apply_rules()
     hl.exec_cmd("sleep 1 && " .. monitors .. " auto; sleep 0.6; " .. wallpaper .. " apply --quiet")
 end)
 hl.on("monitor.removed", function()
+    workspaces.apply_rules()
     hl.exec_cmd("sleep 1 && " .. monitors .. " auto")
 end)
+-- Rearranged monitors renumber the groups (left to right).
+hl.on("monitor.layout_changed", workspaces.apply_rules)
 
 
 -------------------------------
@@ -94,6 +105,7 @@ else
     os.execute("aco-theme --quiet render")
 end
 local theme = dofile(theme_file)
+
 
 hl.config({
     general = {
@@ -212,6 +224,7 @@ hl.config({
     },
 })
 
+-- Drei Finger wischen: Workspaces des Bildschirms (wie bei macOS).
 hl.gesture({
     fingers   = 3,
     direction = "horizontal",
@@ -598,59 +611,35 @@ hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 40,  y = 0, rel
 hl.bind(mainMod .. " + CTRL + up",    hl.dsp.window.resize({ x = 0,  y = -40, relative = true }), { repeating = true })
 hl.bind(mainMod .. " + CTRL + down",  hl.dsp.window.resize({ x = 0,  y = 40,  relative = true }), { repeating = true })
 
--- Bildschirme / Workspaces wechseln mit STRG + ALT + Pfeiltasten (Links / Rechts)
-hl.bind("CTRL + ALT + left",          hl.dsp.focus({ workspace = "r-1" }))
-hl.bind("CTRL + ALT + right",         hl.dsp.focus({ workspace = "r+1" }))
-hl.bind("CTRL + ALT + SHIFT + left",  hl.dsp.window.move({ workspace = "r-1" }))
-hl.bind("CTRL + ALT + SHIFT + right", hl.dsp.window.move({ workspace = "r+1" }))
+-- Workspaces: jeder Bildschirm hat seine eigene Reihe (Kreise in der Leiste),
+-- siehe workspaces.lua. Modus "pro Bildschirm" oder "alle gemeinsam" unter
+-- Einstellungen > Bildschirme.
+hl.bind("CTRL + ALT + left",          function() workspaces.step(-1) end)
+hl.bind("CTRL + ALT + right",         function() workspaces.step(1) end)
+hl.bind("CTRL + ALT + SHIFT + left",  function() workspaces.move_step(-1) end)
+hl.bind("CTRL + ALT + SHIFT + right", function() workspaces.move_step(1) end)
+hl.bind(mainMod .. " + period",         function() workspaces.step(1) end)
+hl.bind(mainMod .. " + comma",          function() workspaces.step(-1) end)
+hl.bind(mainMod .. " + Next",           function() workspaces.step(1) end)
+hl.bind(mainMod .. " + Prior",          function() workspaces.step(-1) end)
+hl.bind(mainMod .. " + SHIFT + period", function() workspaces.move_step(1) end)
+hl.bind(mainMod .. " + SHIFT + comma",  function() workspaces.move_step(-1) end)
+hl.bind(mainMod .. " + N",              workspaces.go_empty)
+hl.bind(mainMod .. " + SHIFT + N",      workspaces.move_empty)
+hl.bind(mainMod .. " + mouse_down",     function() workspaces.step(1) end)
+hl.bind(mainMod .. " + mouse_up",       function() workspaces.step(-1) end)
 
--- Hilfsfunktion: Wechselt nur dann zu Bildschirm / Workspace <num>, wenn dieser tatsächlich existiert ("sofern da")
-local function focus_existing_screen(num)
-    for _, ws in ipairs(hl.get_workspaces()) do
-        if ws.id == num or ws.name == tostring(num) then
-            hl.dispatch(hl.dsp.focus({ workspace = num }))
-            return
-        end
-    end
-    local monitors = hl.get_monitors()
-    if monitors and monitors[num] then
-        hl.dispatch(hl.dsp.focus({ monitor = monitors[num].name }))
-    end
-end
-
--- Workspaces / Bildschirme & Fenster-Positionen über Zahlen (1-10)
 for i = 1, 10 do
     local key = i % 10
-    -- STRG + ALT + <num>: Wechselt zu Bildschirm/Workspace <num>, sofern dieser bereits vorhanden ist
-    hl.bind("CTRL + ALT + " .. key, function()
-        focus_existing_screen(i)
-    end)
-    -- SUPER + ALT + <num>: Springt direkt zu Fenster-Position (Slot) <num> (über alle Bildschirme hinweg!)
-    hl.bind(mainMod .. " + ALT + " .. key, function()
-        jump_window_slot(i)
-    end)
-    -- SUPER + CTRL + <num>: Speichert das aktuelle Fenster fest auf Position (Slot) <num>
-    hl.bind(mainMod .. " + CTRL + " .. key, function()
-        save_window_slot(i)
-    end)
-    -- SUPER + <num>: Wechselt direkt zu Workspace <num> (oder legt ihn neu an)
-    hl.bind(mainMod .. " + " .. key,         hl.dsp.focus({ workspace = i }))
-    hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
+    -- SUPER + <num>: Workspace <num> dieses Bildschirms (bzw. aller Bildschirme)
+    hl.bind(mainMod .. " + " .. key,         function() workspaces.go(i) end)
+    hl.bind(mainMod .. " + SHIFT + " .. key, function() workspaces.move(i) end)
+    -- STRG + ALT + <num>: nur wechseln, wenn der Workspace schon existiert
+    hl.bind("CTRL + ALT + " .. key,          function() workspaces.go_existing(i) end)
+    -- SUPER + ALT + <num>: Fenster-Position (Slot) <num> anspringen; SUPER + CTRL: speichern
+    hl.bind(mainMod .. " + ALT + " .. key,   function() jump_window_slot(i) end)
+    hl.bind(mainMod .. " + CTRL + " .. key,  function() save_window_slot(i) end)
 end
-
--- Unbegrenzte / Dynamische Workspaces (Infinity Workspaces)
-hl.bind(mainMod .. " + period",         hl.dsp.focus({ workspace = "r+1" }))
-hl.bind(mainMod .. " + comma",          hl.dsp.focus({ workspace = "r-1" }))
-hl.bind(mainMod .. " + Next",           hl.dsp.focus({ workspace = "r+1" }))
-hl.bind(mainMod .. " + Prior",          hl.dsp.focus({ workspace = "r-1" }))
-hl.bind(mainMod .. " + N",              hl.dsp.focus({ workspace = "empty" }))
-hl.bind(mainMod .. " + SHIFT + period", hl.dsp.window.move({ workspace = "r+1" }))
-hl.bind(mainMod .. " + SHIFT + comma",  hl.dsp.window.move({ workspace = "r-1" }))
-hl.bind(mainMod .. " + SHIFT + N",      hl.dsp.window.move({ workspace = "empty" }))
-
--- Mausrad durch Workspaces (unbegrenzt)
-hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "r+1" }))
-hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "r-1" }))
 
 -- Scratchpad (Special Workspace)
 hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
@@ -667,13 +656,13 @@ hl.bind(mainMod .. " + Print",     hl.dsp.exec_cmd(screenshot .. " full"))
 hl.bind("ALT + Print",             hl.dsp.exec_cmd(screenshot .. " window"))
 hl.bind("SHIFT + Print",           hl.dsp.exec_cmd(screenshot .. " monitor"))
 
--- Multimedia & Helligkeit (Laptop-Funktionstasten)
-hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),        { locked = true, repeating = true })
-hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),       { locked = true })
-hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),     { locked = true })
-hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                    { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                    { locked = true, repeating = true })
+-- Multimedia & Helligkeit (Laptop-Funktionstasten), mit kurzer Anzeige (osd.sh)
+hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd(osd .. " volume up"),     { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd(osd .. " volume down"),   { locked = true, repeating = true })
+hl.bind("XF86AudioMute",         hl.dsp.exec_cmd(osd .. " volume mute"),   { locked = true })
+hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd(osd .. " mic"),           { locked = true })
+hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd(osd .. " brightness up"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(osd .. " brightness down"), { locked = true, repeating = true })
 
 
 --------------------------------

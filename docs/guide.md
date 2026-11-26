@@ -98,23 +98,31 @@ Pin critical windows (IDE, browser, docs, terminal, chat) to persistent slots an
 
 ---
 
-## Workspaces (Dynamic / Infinite Workspaces)
+## Workspaces (one row per monitor)
 
-Workspaces are created dynamically as needed:
+Every monitor owns its own row of workspaces, shown as circles in the bar: the workspace on screen is filled
+(accent colour on the focused monitor, grey on the others), circles with windows are drawn stronger than empty
+ones. Monitors are numbered left to right; monitor *k* owns the workspace ids *k*·10+1 … *k*·10+10, so
+`Super + 3` means "workspace 3 of this monitor". The logic lives in `workspaces.lua`.
+
+**Settings > Bildschirme** switches between two modes and sets how many circles always exist
+(`~/.config/aco/workspaces.conf`, applied with `hyprctl reload`):
+
+| Setting | Values | Default |
+| :--- | :--- | :--- |
+| `mode` | `monitor` – keys switch only the focused monitor; `all` – `Super + N` switches every monitor to its workspace N | `monitor` |
+| `persistent` | circles that exist even when empty, `0`–`10` | `5` |
 
 | Keybinding | Action |
 | :--- | :--- |
-| <kbd>Super</kbd> + <kbd>1..9, 0</kbd> | Switch directly to workspace `1..10` (creates it if not yet active) |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>1..9, 0</kbd> | Move active window to workspace `1..10` |
-| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>1..9, 0</kbd> | Switch to workspace/monitor `1..10` **only if it already exists** (`focus_existing_screen`, avoids creating empty workspaces) |
-| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>→</kbd> | Switch one workspace to the left (`r-1`) / right (`r+1`) |
-| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd> | Move active window one workspace to the left (`r-1`) / right (`r+1`) |
-| <kbd>Super</kbd> + <kbd>.</kbd> *(or <kbd>Super</kbd> + <kbd>PageDown</kbd>)* | Switch to next workspace (`r+1`, unbounded) |
-| <kbd>Super</kbd> + <kbd>,</kbd> *(or <kbd>Super</kbd> + <kbd>PageUp</kbd>)* | Switch to previous workspace (`r-1`) |
-| <kbd>Super</kbd> + <kbd>N</kbd> | Jump to the next completely empty workspace (`empty`) |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>.</kbd> / <kbd>,</kbd> | Move active window to next (`r+1`) / previous (`r-1`) workspace |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd> | Move active window to the next completely empty workspace |
-| <kbd>Super</kbd> + <kbd>Mouse Wheel Up / Down</kbd> | Cycle through workspaces (`r-1` / `r+1`) |
+| <kbd>Super</kbd> + <kbd>1..9, 0</kbd> | Workspace `1..10` of this monitor (all monitors in mode `all`) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>1..9, 0</kbd> | Move active window to workspace `1..10` of its monitor |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>1..9, 0</kbd> | Same as <kbd>Super</kbd> + <kbd>N</kbd>, but **only if the workspace already exists** |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>←</kbd> / <kbd>→</kbd>, <kbd>Super</kbd> + <kbd>,</kbd> / <kbd>.</kbd>, <kbd>Super</kbd> + <kbd>PageUp</kbd> / <kbd>PageDown</kbd> | Previous / next workspace of this monitor; stops at the last circle instead of creating new ones |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>←</kbd> / <kbd>→</kbd>, <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>,</kbd> / <kbd>.</kbd> | Move active window one workspace left / right |
+| <kbd>Super</kbd> + <kbd>N</kbd> / <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd> | Go to / move the window to the first empty workspace of this monitor |
+| <kbd>Super</kbd> + <kbd>Mouse Wheel</kbd>, scrolling on the circles | Previous / next workspace of this monitor |
+| Clicking a circle | Go to that workspace |
 | `3-Finger Horizontal Swipe` *(Touchpad)* | Swipe horizontally between workspaces |
 | <kbd>Super</kbd> + <kbd>S</kbd> | Toggle special scratchpad workspace (`special:magic`) |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> | Move active window into the scratchpad (`special:magic`) |

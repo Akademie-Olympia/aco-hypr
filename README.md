@@ -37,6 +37,11 @@ template in your user copy to adjust them. `SCREENSHOT_DIR` overrides the locati
 More modes: `screenshot window`, `screenshot monitor`, `screenshot full`. Without Satty, capturing, saving and copying still work.
 Window captures show the visible part of the screen, not hidden window contents. No extra background service runs.
 
+### Laptop keys
+
+Volume, microphone and brightness keys run `osd.sh`, which changes the value and shows a short banner with a bar
+(through aco-swaync, not kept in the notification history).
+
 ### Monitors and local rules
 
 New monitors are placed to the right of the existing ones with their preferred resolution and scale `1` (`auto-right`). Explicit local monitor
@@ -45,6 +50,9 @@ rules take precedence; existing individual layouts are preserved.
 `~/.config/hypr/monitors.local.lua` holds machine-specific monitor rules and is not packaged. The template `monitors.example.lua` shows the
 format; `hyprctl monitors all` lists the outputs. Instead of editing it by hand you can use `monitors.sh` (`Super + Shift + D`): extend, mirror,
 arrange monitors relative to each other, scale, rotate and save profiles that are restored automatically when the same monitors are plugged in.
+Each monitor has its own row of workspaces, shown as circles in the bar (filled = on screen). `Super + 1…9` switches the
+focused monitor, or every monitor at once in mode `all`; switch the mode and the number of fixed circles under
+**Einstellungen > Bildschirme** (`workspaces.lua`, `~/.config/aco/workspaces.conf`).
 `Super + S` shows or hides the scratchpad workspace; `Super + Shift + S` moves the active window there. After changes run `hyprctl reload` and
 `hyprctl configerrors`.
 

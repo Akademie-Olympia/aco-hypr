@@ -88,23 +88,23 @@ do not appear here – they only apply locally.
 
 | Key | Action |
 | --- | --- |
-| {kbd}`Ctrl + Alt + ←` | Previous workspace |
-| {kbd}`Ctrl + Alt + →` | Next workspace |
+| {kbd}`Ctrl + Alt + ←` | Previous workspace of this monitor |
+| {kbd}`Ctrl + Alt + →` | Next workspace of this monitor |
 | {kbd}`Ctrl + Alt + Shift + ←` | Move window to the previous workspace |
 | {kbd}`Ctrl + Alt + Shift + →` | Move window to the next workspace |
-| {kbd}`Ctrl + Alt + 1…0` | Go to screen/workspace N, if it exists |
-| {kbd}`Super + 1…0` | Switch to workspace N |
-| {kbd}`Super + Shift + 1…0` | Move window to workspace N |
-| {kbd}`Super + .` | Next workspace |
-| {kbd}`Super + ,` | Previous workspace |
-| {kbd}`Super + PageDown` | Next workspace |
-| {kbd}`Super + PageUp` | Previous workspace |
-| {kbd}`Super + N` | Open an empty workspace |
+| {kbd}`Super + .` | Next workspace of this monitor |
+| {kbd}`Super + ,` | Previous workspace of this monitor |
+| {kbd}`Super + PageDown` | Next workspace of this monitor |
+| {kbd}`Super + PageUp` | Previous workspace of this monitor |
 | {kbd}`Super + Shift + .` | Move window to the next workspace |
 | {kbd}`Super + Shift + ,` | Move window to the previous workspace |
+| {kbd}`Super + N` | Open an empty workspace |
 | {kbd}`Super + Shift + N` | Move window to an empty workspace |
-| {kbd}`Super + Wheel↓` | Next workspace |
-| {kbd}`Super + Wheel↑` | Previous workspace |
+| {kbd}`Super + Wheel↓` | Next workspace of this monitor |
+| {kbd}`Super + Wheel↑` | Previous workspace of this monitor |
+| {kbd}`Super + 1…0` | Switch to workspace N (this monitor, or all in mode "all") |
+| {kbd}`Super + Shift + 1…0` | Move window to workspace N of this monitor |
+| {kbd}`Ctrl + Alt + 1…0` | Go to workspace N, if it exists |
 
 ## Monitors
 
