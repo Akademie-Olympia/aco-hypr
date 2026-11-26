@@ -5,10 +5,6 @@
 # ============================================================================
 set -euo pipefail
 
-if pgrep -x "fuzzel" > /dev/null; then
-    pkill -x "fuzzel"
-    exit 0
-fi
 
 clients_json="$(hyprctl clients -j)"
 monitors_json="$(hyprctl monitors -j)"
@@ -59,10 +55,10 @@ if (( line_count > 12 )); then
     line_count=12
 fi
 
-chosen="$(printf "%s\n" "$display_lines" | fuzzel --dmenu \
-    --prompt="󰖯  Springe zu: " \
-    --placeholder="Fenster, Position (Pos 1..9), Programm oder Bildschirm..." \
-    --width=72 \
+chosen="$(printf "%s\n" "$display_lines" | aco-menu \
+    --prompt="󰖯" \
+    --placeholder="Fenster, Position (Pos 1..9), Programm oder Bildschirm …" \
+    --width=52 \
     --lines="$line_count")" || exit 0
 
 if [[ -z "$chosen" ]]; then

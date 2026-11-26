@@ -16,7 +16,7 @@ Why Hyprland is built the way it is, what it needs from other ACO components, wh
 | Component | Why |
 | --- | --- |
 | [Kitty](https://aco-kitty.readthedocs.io/en/latest/) | Default terminal (`Super + Enter`), also for `kitty -e yazi` and `kitty -e tmux` |
-| [Fuzzel](https://aco-docs.readthedocs.io/en/latest/fuzzel/) | Launcher and all menu scripts (`powermenu.sh`, `windowswitcher.sh`, `askpass.sh`) |
+| [rofi](https://github.com/Akademie-Olympia/aco-rofi) | Launcher and all menu scripts through `aco-menu` (`settings.sh`, `powermenu.sh`, `windowswitcher.sh`, `askpass.sh`) |
 | [Waybar](https://aco-docs.readthedocs.io/en/latest/waybar/) | Started with the session (`Super + Shift + B` reloads it) |
 | [Wallpaper](https://aco-docs.readthedocs.io/en/latest/wallpaper/) | Backgrounds at start and on `monitor.added`; `Super + Shift + W` |
 | [tmux](https://aco-tmux.readthedocs.io/en/latest/) | `Super + Shift + Enter` opens Kitty with the tmux session `main` |
@@ -28,7 +28,7 @@ Why Hyprland is built the way it is, what it needs from other ACO components, wh
 | Component | Why |
 | --- | --- |
 | [Waybar](https://aco-docs.readthedocs.io/en/latest/waybar/) | Workspaces through the Hyprland IPC; the power menu calls `powermenu.sh`, `hyprlock` and `hyprctl` |
-| [Wallpaper](https://aco-docs.readthedocs.io/en/latest/wallpaper/) | `hyprctl` and `hyprpaper`; the session calls `wallpaper apply` at start and on plug-in |
+| [Wallpaper](https://aco-docs.readthedocs.io/en/latest/wallpaper/) | `hyprctl` and `swaybg`; the session calls `wallpaper apply` at start and on plug-in |
 | [Zsh](https://aco-zsh.readthedocs.io/en/latest/) | `SUDO_ASKPASS` points to `askpass.sh` (graphical password prompt) |
 
 ## Packages and libraries
@@ -39,7 +39,6 @@ From the `PKGBUILD` of this component; “Tested with” is the version installe
 | --- | --- | --- | --- |
 | `aco-arch-dotfiles-core` | ≥ 0.3.0 | 0.3.0.r64.g6f4e3d6c742b-64 | The `aco` command, activation and synchronisation |
 | `hyprland` | ≥ 0.56.0 | 0.57.2-1 | Wayland compositor; the configuration is Lua (since 0.55) and needs at least 0.56 |
-| `hyprpaper` | – | 0.8.5-3 | Wallpaper daemon, controlled by the wallpaper command over IPC |
 | `hyprlock` | – | 0.9.7-2 | Screen lock (`Super + L`, power menu) |
 | `hypridle` | – | 0.1.8-2 | Idle detection (lock/suspend) |
 | `xdg-desktop-portal-hyprland` | – | 1.5.0-1 | Screen sharing and screenshot portal for Wayland programs |
@@ -53,7 +52,7 @@ From the `PKGBUILD` of this component; “Tested with” is the version installe
 | `procps-ng` | – | 4.0.7-1 | `pgrep`/`pkill` in the menu scripts |
 | `sudo` | – | 1.9.17.p2-7 | Graphical password prompt through `askpass.sh` |
 | `aco-arch-dotfiles-kitty` | – | 0.3.0.r26.g253bf818d7e8-64 | ACO component Kitty |
-| `aco-arch-dotfiles-fuzzel` | – | 0.3.0.r8.gcc7f25a286fc-64 | ACO component Fuzzel |
+| `aco-arch-dotfiles-rofi` | – | 0.1.0 | ACO component rofi |
 | `aco-arch-dotfiles-waybar` | – | 0.3.0.r8.gd73e8e718b6f-64 | ACO component Waybar |
 | `aco-arch-dotfiles-wallpaper` | – | 0.3.0.r8.gb16dcdd29d0f-64 | ACO component Wallpaper |
 | `aco-arch-dotfiles-tmux` | – | 0.3.0.r42.gbc5a74a88b89-64 | ACO component tmux |

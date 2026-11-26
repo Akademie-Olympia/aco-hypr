@@ -343,8 +343,8 @@ show_status() {
 }
 
 menu() {
-    need fuzzel
-    local ask=(fuzzel --dmenu --width=40 --lines=12 --prompt='Bildschirme ')
+    need aco-menu
+    local ask=(aco-menu --width=34 --lines=12 --prompt='󰍹')
     choose_output() {
         local list; list="$(names)"
         [[ $(wc -l <<<"$list") -eq 1 ]] && { echo "$list"; return; }

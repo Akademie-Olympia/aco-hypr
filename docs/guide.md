@@ -8,7 +8,7 @@ Hyprland (`~/.config/hypr/hyprland.lua`) serves as the primary Wayland tiling co
 
 - **Responsiveness**: Animations, shadows, and blur are disabled (`animations.enabled = false`, `blur.enabled = false`, `shadow.enabled = false`).
 - **Screen space**: No inner or outer gaps, unrounded corners and a `1px` border.
-- **Window navigation**: Return to the previous window (`Alt + Tab`), cycle windows (`Alt + Shift + Tab`), search with Fuzzel (`Super + G`), or use cross-monitor slots.
+- **Window navigation**: Return to the previous window (`Alt + Tab`), cycle windows (`Alt + Shift + Tab`), search with the menu (`Super + G`), or use cross-monitor slots.
 - **TTY launch**: Log into a Linux TTY and start the session with `start-hyprland`.
 
 ---
@@ -48,14 +48,14 @@ The primary modifier key (`SUPER`) is the **Windows / Super key**.
 
 | Keybinding | Command / Script | Action |
 | :--- | :--- | :--- |
-| <kbd>Super</kbd> + <kbd>Space</kbd> *(or <kbd>Alt</kbd> + <kbd>Space</kbd>, <kbd>Super</kbd> + <kbd>D</kbd> / <kbd>R</kbd> / <kbd>A</kbd>)* | `pkill -x fuzzel \|\| fuzzel` | Toggle **Fuzzel** application launcher |
+| <kbd>Super</kbd> + <kbd>Space</kbd> *(or <kbd>Alt</kbd> + <kbd>Space</kbd>, <kbd>Super</kbd> + <kbd>D</kbd> / <kbd>R</kbd> / <kbd>A</kbd>)* | `aco-menu apps` | Toggle the **rofi** launcher (apps and windows) |
 | <kbd>Super</kbd> + <kbd>Return</kbd> *(or <kbd>Super</kbd> + <kbd>Q</kbd>)* | `kitty` | Open default terminal ([Kitty](https://aco-kitty.readthedocs.io/en/latest/)) |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> | `kitty -e tmux new-session -A -s main` | Open terminal attached to persistent [tmux](https://aco-tmux.readthedocs.io/en/latest/) session `main` |
 | <kbd>Super</kbd> + <kbd>B</kbd> | `firefox` | Launch web browser (**Firefox**) |
 | <kbd>Super</kbd> + <kbd>E</kbd> | `pcmanfm` | Open GUI file manager (**PCManFM**, themed by aco-theme) |
 | <kbd>Super</kbd> + <kbd>Y</kbd> | `kitty -e yazi` | Open TUI file manager (**Yazi**) |
 | <kbd>Super</kbd> + <kbd>L</kbd> | `hyprlock` | Lock screen immediately |
-| <kbd>Super</kbd> + <kbd>Escape</kbd> | `~/.config/hypr/powermenu.sh` | Open top-right Fuzzel Power Menu (Shutdown, Reboot, Suspend, Lock, Logout) |
+| <kbd>Super</kbd> + <kbd>Escape</kbd> | `~/.config/hypr/powermenu.sh` | Power menu (lock, log out, suspend, reboot, shut down) |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> | `killall -SIGUSR2 waybar \|\| ...` | Reload or restart **Waybar** |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>W</kbd> | `~/.config/wallpaper/wallpaper.sh tui` | Open interactive multi-monitor **Wallpaper TUI** (`wallpaper`) |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>E</kbd> *(or <kbd>Super</kbd> + <kbd>M</kbd>)* | `hl.dsp.exit()` | Exit Hyprland session back to TTY |
@@ -73,7 +73,7 @@ All window switching functions in `hyprland.lua` operate **globally across all c
 | <kbd>Alt</kbd> + <kbd>Tab</kbd> *(or <kbd>Super</kbd> + <kbd>Tab</kbd>, <kbd>Super</kbd> + <kbd>BackSpace</kbd>)* | `focus_last_window()` | **Jump immediately to the last active window** across any monitor or workspace. Pressing it again jumps right back (ping-pong switch). |
 | <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> *(or <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd>)* | `cycle_all_windows(1)` | **Cycle through all open windows** across all monitors and workspaces (sorted spatially left-to-right, top-to-bottom). |
 | <kbd>Super</kbd> + <kbd>^</kbd> *(or <kbd>Super</kbd> + <kbd>`</kbd>, key below Escape)* | `cycle_same_class()` | **Cycle through windows of the same application** across all monitors (e.g. all Kitty terminals or Firefox windows). |
-| <kbd>Super</kbd> + <kbd>G</kbd> *(or <kbd>Super</kbd> + <kbd>#</kbd>)* | `~/.config/hypr/windowswitcher.sh` | **Interactive Fuzzel Window & Slot Switcher**: Lists all open windows sorted by focus history (most recent window first -> press <kbd>Enter</kbd> to jump immediately, or type to filter by app, title, monitor, or `Pos 1..9`). |
+| <kbd>Super</kbd> + <kbd>G</kbd> *(or <kbd>Super</kbd> + <kbd>#</kbd>)* | `~/.config/hypr/windowswitcher.sh` | **Interactive Window & Slot Switcher**: Lists all open windows sorted by focus history (most recent window first -> press <kbd>Enter</kbd> to jump immediately, or type to filter by app, title, monitor, or `Pos 1..9`). |
 
 ### 2. Window Pinning Slots (`1..10` and `F1..F4`)
 
@@ -156,7 +156,7 @@ Workspaces are created dynamically as needed:
 
 The Hyprland package installs `grim`, `slurp`, `wl-clipboard` and `satty` as
 dependencies, along with the `screenshot` command and the **Screenshot** application
-entry in Fuzzel. No additional screenshot daemon is needed.
+entry in the launcher. No additional screenshot daemon is needed.
 
 Press **Print**, draw a rectangle, and use Satty to add arrows, text, highlights
 or blur. **Enter / Ctrl+C** copies the edited image, saves it and closes Satty;
