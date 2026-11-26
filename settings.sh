@@ -2,8 +2,8 @@
 # ============================================================================
 # EINSTELLUNGEN (Super + I): ein durchsuchbarer Hub für das ganze System.
 #   settings.sh [seite]   seite = appearance | wallpaper | wifi | bluetooth |
-#                         sound | displays | power | notifications | system |
-#                         keys | update
+#                         sound | camera | displays | power | notifications |
+#                         system | keys | update
 # Jede Seite ist ein aco-menu; Einträge erscheinen nur, wenn ihr Werkzeug
 # installiert ist. Esc auf einer Unterseite führt zurück zur Übersicht.
 # ============================================================================
@@ -51,6 +51,7 @@ page_main() {
         if have nmcli; then row "󰤨   WLAN & Netzwerk" wifi; fi
         if have bluetoothctl; then row "󰂯   Bluetooth" bluetooth; fi
         if have pactl; then row "󰕾   Ton" sound; fi
+        if [[ -n $(cameras) ]]; then row "󰄀   Kamera" camera; fi
         row "󰍹   Bildschirme" displays
         if have powerprofilesctl; then row "󰂄   Energie" power; fi
         if have swaync-client; then row "󰂚   Mitteilungen" notifications; fi
@@ -216,6 +217,27 @@ page_wifi() {
 }
 
 # --- Bluetooth -----------------------------------------------------------------
+# Sucht kurz nach Geräten und koppelt das gewählte (pair, trust, connect).
+# Geräte, die eine PIN-Bestätigung brauchen, lassen sich danach im Terminal
+# mit bluetoothctl koppeln; der Hub bietet das bei einem Fehler an.
+bluetooth_pair() {
+    local mac name
+    notify "Bluetooth" "Suche 8 Sekunden nach Geräten …"
+    bluetoothctl --timeout 8 scan on >/dev/null 2>&1 || true
+    mac=$(comm -23 <(bluetoothctl devices | sort) <(bluetoothctl devices Paired | sort) |
+        while read -r _ mac name; do
+            [[ $name == "${mac//:/-}" ]] && continue   # Geräte ohne Namen auslassen
+            row "󰂯   $name" "$mac"
+        done | pick "󰐕" "Gerät zum Koppeln wählen" --width 32) || back $? bluetooth
+    if bluetoothctl pair "$mac" >/dev/null 2>&1 && bluetoothctl trust "$mac" >/dev/null 2>&1 &&
+        bluetoothctl connect "$mac" >/dev/null 2>&1; then
+        notify "Bluetooth" "Gekoppelt und verbunden"
+    else
+        notify -u critical "Bluetooth" "Koppeln fehlgeschlagen – im Terminal mit bluetoothctl versuchen"
+        exec "$terminal" -e bluetoothctl
+    fi
+}
+
 page_bluetooth() {
     local powered choice mac
     powered=$(bluetoothctl show 2>/dev/null | awk '/Powered:/ { print $2; exit }')
@@ -230,34 +252,75 @@ page_bluetooth() {
                 fi
             done
             row "󰐕   Neues Gerät koppeln …" pair
+            row "󰆴   Gerät entfernen …" remove
         else
             row "󰂯   Bluetooth einschalten" on
         fi
     } | pick "󰂯" "Bluetooth" --width 32) || back $?
     case $choice in
         on | off) bluetoothctl power "$choice" >/dev/null ;;
-        pair) exec "$terminal" -e bluetoothctl ;;
+        pair) bluetooth_pair ;;
+        remove)
+            mac=$(bluetoothctl devices Paired | while read -r _ mac name; do row "󰆴   $name" "$mac"; done |
+                pick "󰆴" "Gerät entfernen") || back $? bluetooth
+            bluetoothctl remove "$mac" >/dev/null && notify "Bluetooth" "Gerät entfernt" ;;
         connect* | disconnect*) mac=${choice#* }; bluetoothctl "${choice%% *}" "$mac" >/dev/null ;;
     esac
 }
 
 # --- Ton -----------------------------------------------------------------------
+muted() { wpctl get-volume "$1" 2>/dev/null | grep -q MUTED; }
+
 page_sound() {
-    local default_sink default_source choice
+    local default_sink default_source choice volume
     default_sink=$(pactl get-default-sink 2>/dev/null || true)
     default_source=$(pactl get-default-source 2>/dev/null || true)
+    volume=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk '{ printf "%d %%", $2 * 100 + 0.5 }')
     choice=$({
+        if muted @DEFAULT_AUDIO_SINK@; then row "󰕾   Ton einschalten" "mute @DEFAULT_AUDIO_SINK@"
+        else row "󰝟   Ton stummschalten" "mute @DEFAULT_AUDIO_SINK@"; fi
+        if muted @DEFAULT_AUDIO_SOURCE@; then row "󰍬   Mikrofon einschalten" "mute @DEFAULT_AUDIO_SOURCE@"
+        else row "󰍭   Mikrofon stummschalten" "mute @DEFAULT_AUDIO_SOURCE@"; fi
         pactl -f json list sinks 2>/dev/null | jq -r --arg d "$default_sink" \
             '.[] | "󰕾   \(.description)\(if .name == $d then "  ✓" else "" end)\tsink:\(.name)"'
         pactl -f json list sources 2>/dev/null | jq -r --arg d "$default_source" \
             '.[] | select(.monitor_source == "") | "󰍬   \(.description)\(if .name == $d then "  ✓" else "" end)\tsource:\(.name)"'
         if have pavucontrol; then row "󰒓   Mixer (pavucontrol) …" mixer; fi
-    } | pick "󰕾" "Ausgabe oder Eingabe wählen" --width 40) || back $?
+    } | pick "󰕾" "Ton" --width 40 --message "Lautstärke ${volume:-unbekannt} · Regler im Kontrollzentrum (Super + U)") || back $?
     case $choice in
+        mute*) wpctl set-mute "${choice#mute }" toggle; page_sound ;;
         sink:*) pactl set-default-sink "${choice#sink:}" ;;
         source:*) pactl set-default-source "${choice#source:}" ;;
         mixer) exec pavucontrol ;;
     esac
+}
+
+# --- Kamera ------------------------------------------------------------------
+# Kameras aus /sys (nur der erste Knoten je Gerät nimmt Bilder auf), dazu welches
+# Programm sie gerade benutzt. Ohne Kamera erscheint die Seite nicht.
+cameras() { # -> "/dev/videoN<TAB>Name" je Kamera
+    local node
+    for node in /sys/class/video4linux/video*; do
+        [[ -e $node/name && $(cat "$node/index" 2>/dev/null) == 0 ]] || continue
+        printf '/dev/%s\t%s\n' "${node##*/}" "$(cat "$node/name")"
+    done
+}
+
+camera_user() { # gerät -> Programmname oder leer
+    fuser "$1" 2>/dev/null | awk '{ print $1 }' | xargs -r -I{} cat /proc/{}/comm 2>/dev/null | paste -sd, -
+}
+
+page_camera() {
+    local choice device name user
+    choice=$(cameras | while IFS=$'\t' read -r device name; do
+        user=$(camera_user "$device")
+        if [[ -n $user ]]; then row "󰄀   $name  ·  in Benutzung von $user" "$device"
+        else row "󰄀   $name" "$device"; fi
+    done | pick "󰄀" "Kamera" --width 40 --message "Kamera wählen für ein Vorschaubild") || back $?
+    if have ffplay; then
+        exec ffplay -loglevel error -window_title "Kamera – $choice" -f v4l2 "$choice"
+    fi
+    notify "Kamera" "Für die Vorschau wird ffplay (Paket ffmpeg) benötigt"
 }
 
 # --- Energie -------------------------------------------------------------------
