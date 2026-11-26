@@ -64,10 +64,9 @@ page_main() {
 # --- Erscheinungsbild ----------------------------------------------------------
 page_appearance() {
     have aco-theme || { notify "aco-theme fehlt"; exit 1; }
-    local mode transparency accent theme choice
+    local mode transparency theme choice
     mode=$(aco-theme get mode)
     transparency=$(aco-theme get transparency)
-    accent=$(aco-theme get accent_name)
     theme=$(aco-theme get theme)
     choice=$({
         if [[ $mode == dark ]]; then row "󰖨   Hell" "mode light"; else row "󰖔   Dunkel" "mode dark"; fi
