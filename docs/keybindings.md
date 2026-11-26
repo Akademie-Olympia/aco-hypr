@@ -114,7 +114,7 @@ do not appear here – they only apply locally.
 | {kbd}`Super + <` | Focus the next monitor |
 | {kbd}`Super + Shift + O` | Move window to the next monitor |
 | {kbd}`Super + Shift + <` | Move window to the next monitor |
-| {kbd}`Super + Ctrl + O` | Swap the workspaces of the monitors |
+| {kbd}`Super + Ctrl + O` | Swap the workspace rows of this and the next monitor |
 
 ## Scratchpad
 

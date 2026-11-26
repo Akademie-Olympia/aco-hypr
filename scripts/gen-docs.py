@@ -60,7 +60,7 @@ RULES = [
     (r"hl\.dsp\.focus\(\{ direction", "Focus", "Move focus"),
     (r"focus_next_monitor", "Monitors", "Focus the next monitor"),
     (r"move_window_to_next_monitor", "Monitors", "Move window to the next monitor"),
-    (r"swap_monitors_workspaces", "Monitors", "Swap the workspaces of the monitors"),
+    (r"workspaces\.swap_with_next_monitor", "Monitors", "Swap the workspace rows of this and the next monitor"),
     (r'workspace\.toggle_special', "Scratchpad", "Show/hide scratchpad"),
     (r'window\.move\(\{ workspace = "special', "Scratchpad", "Move window to the scratchpad"),
     (r"workspaces\.move_step\(1\)", "Workspaces", "Move window to the next workspace"),

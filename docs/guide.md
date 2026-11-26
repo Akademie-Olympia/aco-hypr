@@ -94,7 +94,7 @@ Pin critical windows (IDE, browser, docs, terminal, chat) to persistent slots an
 | :--- | :--- | :--- |
 | <kbd>Super</kbd> + <kbd>O</kbd> *(or <kbd>Super</kbd> + <kbd>&lt;</kbd>)* | `focus_next_monitor(1)` | Focus the next / other physical monitor |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>O</kbd> *(or <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>&lt;</kbd>)* | `move_window_to_next_monitor()` | Move active window to the next physical monitor and focus it |
-| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>O</kbd> | `swap_monitors_workspaces()` | Swap the active workspaces between the two monitors |
+| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>O</kbd> | `workspaces.swap_with_next_monitor()` | Swap the whole workspace rows of this and the next monitor |
 
 ---
 
@@ -102,8 +102,11 @@ Pin critical windows (IDE, browser, docs, terminal, chat) to persistent slots an
 
 Every monitor owns its own row of workspaces, shown as circles in the bar: the workspace on screen is filled
 (accent colour on the focused monitor, grey on the others), circles with windows are drawn stronger than empty
-ones. Monitors are numbered left to right; monitor *k* owns the workspace ids *k*·10+1 … *k*·10+10, so
-`Super + 3` means "workspace 3 of this monitor". The logic lives in `workspaces.lua`.
+ones. Every monitor owns one row (group) of ids: *k*·10+1 … *k*·10+10, at start the first monitor 1–10 and the next
+one 11–20, left to right. `Super + 3` therefore means "workspace 3 of this monitor". A monitor keeps its row when
+monitors are rearranged; a monitor that is plugged in gets the lowest free row and its workspaces back, and when a
+monitor is unplugged its workspaces with windows appear as extra circles on the remaining one. The logic lives in
+`workspaces.lua`.
 
 **Settings > Bildschirme** switches between two modes and sets how many circles always exist
 (`~/.config/aco/workspaces.conf`, applied with `hyprctl reload`):
@@ -123,7 +126,7 @@ ones. Monitors are numbered left to right; monitor *k* owns the workspace ids *k
 | <kbd>Super</kbd> + <kbd>N</kbd> / <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd> | Go to / move the window to the first empty workspace of this monitor |
 | <kbd>Super</kbd> + <kbd>Mouse Wheel</kbd>, scrolling on the circles | Previous / next workspace of this monitor |
 | Clicking a circle | Go to that workspace |
-| `3-Finger Horizontal Swipe` *(Touchpad)* | Swipe horizontally between workspaces |
+| `3-Finger Horizontal Swipe` *(Touchpad)* | Next / previous workspace of this monitor (one step per swipe, no live tracking) |
 | <kbd>Super</kbd> + <kbd>S</kbd> | Toggle special scratchpad workspace (`special:magic`) |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> | Move active window into the scratchpad (`special:magic`) |
 

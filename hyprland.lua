@@ -81,8 +81,6 @@ hl.on("monitor.removed", function()
     workspaces.apply_rules()
     hl.exec_cmd("sleep 1 && " .. monitors .. " auto")
 end)
--- Rearranged monitors renumber the groups (left to right).
-hl.on("monitor.layout_changed", workspaces.apply_rules)
 
 
 -------------------------------
@@ -224,12 +222,10 @@ hl.config({
     },
 })
 
--- Drei Finger wischen: Workspaces des Bildschirms (wie bei macOS).
-hl.gesture({
-    fingers   = 3,
-    direction = "horizontal",
-    action    = "workspace",
-})
+-- Drei Finger wischen: nächster/voriger Workspace dieses Bildschirms (wie bei
+-- macOS). Über workspaces.lua, damit die Geste in der Reihe des Monitors bleibt.
+hl.gesture({ fingers = 3, direction = "left",  action = function() workspaces.step(1) end })
+hl.gesture({ fingers = 3, direction = "right", action = function() workspaces.step(-1) end })
 
 
 ---------------------
@@ -548,26 +544,6 @@ local function move_window_to_next_monitor()
     end
 end
 
--- Tauscht die aktiven Workspaces zwischen den beiden Bildschirmen
-local function swap_monitors_workspaces()
-    local mons = get_sorted_monitors()
-    if #mons <= 1 then
-        return
-    end
-    local active_mon = hl.get_active_monitor()
-    local cur_idx    = 1
-    for i, m in ipairs(mons) do
-        if active_mon and m.name == active_mon.name then
-            cur_idx = i
-            break
-        end
-    end
-    local other_m = mons[(cur_idx % #mons) + 1]
-    if active_mon and other_m then
-        hl.dispatch(hl.dsp.workspace.swap_monitors({ monitor1 = active_mon.name, monitor2 = other_m.name }))
-    end
-end
-
 -- Tastenkombinationen: Letztes Fenster / Alle Fenster / Gleiches Programm / Interaktiver Switcher
 hl.bind("ALT + Tab",                         focus_last_window)
 hl.bind(mainMod .. " + Tab",                 focus_last_window)
@@ -584,7 +560,7 @@ hl.bind(mainMod .. " + O",                   function() focus_next_monitor(1) en
 hl.bind(mainMod .. " + less",                function() focus_next_monitor(1) end)
 hl.bind(mainMod .. " + SHIFT + O",           move_window_to_next_monitor)
 hl.bind(mainMod .. " + SHIFT + less",        move_window_to_next_monitor)
-hl.bind(mainMod .. " + CTRL + O",            swap_monitors_workspaces)
+hl.bind(mainMod .. " + CTRL + O",            workspaces.swap_with_next_monitor)
 
 -- Tastenkombinationen: Schnell-Positionen F1..F4 (Anspringen mit SUPER + F1..F4, Speichern mit SUPER + CTRL + F1..F4)
 for slot = 1, 4 do
