@@ -66,7 +66,7 @@ Colours, fonts and rounding come from [aco-theme](https://github.com/Akademie-Ol
 After changing bindings run `python3 scripts/check-binds.py` inside the session: it verifies that every command a binding
 starts exists and that no key combination is bound twice (`make binds` in aco-dev runs it in the test VM).
 
-`Super + I` opens the settings hub (`settings.sh`: appearance, wallpaper grid, Wi-Fi, Bluetooth, sound, displays, power profile, notifications, system and drivers, shortcuts, update; entries appear only when their tool is installed; Esc goes back one level). All menus run through `aco-menu` (aco-rofi). `Super + Shift + T` toggles light/dark. `Super + U` opens the notification centre (aco-swaync).
+`Super + I` opens the settings hub (`settings.sh`: appearance, wallpaper grid, Wi-Fi, Bluetooth with scanning and pairing, sound with mute and device choice, camera with a live preview and which app uses it, displays with the workspace mode, power profile, notifications, system and drivers, shortcuts, update; entries appear only when their tool or device is present; Esc goes back one level). Quick toggles and sliders live in the control centre (aco-swaync). All menus run through `aco-menu` (aco-rofi). `Super + Shift + T` toggles light/dark. `Super + U` opens the notification centre (aco-swaync).
 
 [![Package safety](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml/badge.svg)](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml)
 
