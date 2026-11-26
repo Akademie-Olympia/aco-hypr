@@ -73,7 +73,7 @@ page_appearance() {
         if [[ $mode == dark ]]; then row "󰖨   Hell" "mode light"; else row "󰖔   Dunkel" "mode dark"; fi
         if [[ $transparency == on ]]; then row "󰂵   Transparenz ausschalten" "transparency off"
         else row "󰂵   Transparenz einschalten" "transparency on"; fi
-        row "󰏘   Akzentfarbe · $accent" accent
+        row "󰏘   Akzentfarbe" accent
         row "󰉼   Theme · $theme" theme
         row "󰷈   Eigene Anpassungen bearbeiten" edit
     } | pick "󰔎" "Erscheinungsbild" --width 30) || back $?
@@ -89,10 +89,12 @@ page_appearance() {
 }
 
 page_accent() {
+    local -A label=([blue]=Blau [purple]=Lila [pink]=Rosa [red]=Rot [orange]=Orange
+        [yellow]=Gelb [green]=Grün [cyan]=Türkis [graphite]=Graphit)
     local name color choice
     choice=$(for name in blue purple pink red orange yellow green cyan graphite; do
         color=$(aco-theme get "$name")
-        row "<span foreground='$color'>●</span>   $name" "$name"
+        row "<span foreground='$color'>●</span>   ${label[$name]}" "$name"
     done | pick "󰏘" "Akzentfarbe" --markup --width 24) || back $? appearance
     aco-theme accent "$choice"
 }
