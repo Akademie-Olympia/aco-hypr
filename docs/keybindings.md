@@ -28,6 +28,7 @@ do not appear here – they only apply locally.
 | {kbd}`Super + A` | Control centre (toggles, sliders, media) |
 | {kbd}`Super + L` | Lock screen |
 | {kbd}`Super + Esc` | Power menu |
+| {kbd}`Super + F12` | System menu (the Arch logo at the top left) |
 | {kbd}`Super + I` | Settings (appearance, wallpaper, Wi-Fi, sound, displays, drivers …) |
 | {kbd}`Super + U` | Notification centre |
 | {kbd}`Super + Shift + T` | Toggle light/dark |

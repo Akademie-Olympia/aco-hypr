@@ -24,6 +24,8 @@ pick() {
     # Show every row up to 12; options passed by the caller (e.g. --lines) win.
     lines=$(wc -l <<<"$rows")
     ((lines > 12)) && lines=12
+    # ACO_MENU_DROPDOWN=left|right opens the page as a menu below the bar (Waybar clicks).
+    [[ -n ${ACO_MENU_DROPDOWN:-} ]] && set -- "$@" --dropdown "$ACO_MENU_DROPDOWN"
     chosen=$(cut -f1 <<<"$rows" | aco-menu --prompt "$prompt" --placeholder "$placeholder" --lines "$lines" "$@") || return
     awk -F '\t' -v sel="$chosen" '$1 == sel { print $2; exit }' <<<"$rows"
 }
@@ -54,7 +56,7 @@ page_main() {
         if have pactl; then row "󰕾   Ton" sound; fi
         if [[ -n $(cameras) ]]; then row "󰄀   Kamera" camera; fi
         row "󰍹   Bildschirme" displays
-        if have powerprofilesctl; then row "󰂄   Energie" power; fi
+        if [[ -n $(battery_dir) ]] || ppd_running; then row "󰂄   Energie" power; fi
         if have swaync-client; then row "󰂚   Mitteilungen" notifications; fi
         row "󰻠   System & Treiber" system
         if have aco; then row "󰌌   Tastenkürzel" keys; fi
@@ -370,20 +372,80 @@ page_camera() {
 }
 
 # --- Energie -------------------------------------------------------------------
+# Akku-Zustand aus /sys (kein Zusatzdienst): Ladung, Laufzeit, Leistung und
+# Gesundheit, dazu die Programme, die gerade viel Rechenzeit brauchen.
+battery_dir() {
+    local dir
+    for dir in /sys/class/power_supply/*; do
+        [[ $(cat "$dir/type" 2>/dev/null) == Battery ]] && { echo "$dir"; return; }
+    done
+    return 0
+}
+
+battery_summary() { # -> eine oder zwei Zeilen für --message
+    local dir=$1 capacity status now full design power hours line
+    capacity=$(cat "$dir/capacity") status=$(cat "$dir/status")
+    now=$(cat "$dir/energy_now" 2>/dev/null || cat "$dir/charge_now" 2>/dev/null || echo 0)
+    full=$(cat "$dir/energy_full" 2>/dev/null || cat "$dir/charge_full" 2>/dev/null || echo 0)
+    design=$(cat "$dir/energy_full_design" 2>/dev/null || cat "$dir/charge_full_design" 2>/dev/null || echo 0)
+    power=$(cat "$dir/power_now" 2>/dev/null || echo 0)
+    case $status in
+        Discharging) line="Akku $capacity % · entlädt" ;;
+        Charging) line="Akku $capacity % · lädt" ;;
+        Full) line="Akku $capacity % · voll" ;;
+        *) line="Akku $capacity % · am Netz" ;;
+    esac
+    # Restzeit nur mit Energiewerten (µWh, µW); Ladungswerte (µAh) haben keine Leistung.
+    if ((power > 0)) && [[ -r $dir/energy_now ]]; then
+        if [[ $status == Discharging ]]; then hours=$(awk -v e="$now" -v p="$power" 'BEGIN { printf "%d:%02d", e / p, (e / p * 60) % 60 }')
+            line+=" · noch $hours h"
+        elif [[ $status == Charging ]]; then hours=$(awk -v e="$((full - now))" -v p="$power" 'BEGIN { printf "%d:%02d", e / p, (e / p * 60) % 60 }')
+            line+=" · voll in $hours h"
+        fi
+        line+=" · $(awk -v p="$power" 'BEGIN { printf "%.1f", p / 1000000 }') W"
+    fi
+    ((design > 0)) && line+=$'\n'"Zustand $((full * 100 / design)) % der ursprünglichen Kapazität"
+    printf '%s' "$line"
+    return 0
+}
+
+# Energiemodi direkt über D-Bus (power-profiles-daemon); powerprofilesctl
+# bräuchte python-gobject.
+ppd_property() { # get|set NAME [TYP WERT]
+    local action=$1 name=$2
+    shift 2
+    busctl --system "$action-property" net.hadess.PowerProfiles /net/hadess/PowerProfiles \
+        net.hadess.PowerProfiles "$name" "$@"
+}
+
+ppd_running() { have busctl && ppd_property get ActiveProfile >/dev/null 2>&1; }
+
+busy_apps() { # -> "firefox, kitty" (über 5 % CPU) oder leer
+    # The measuring commands themselves are left out.
+    ps -eo comm=,%cpu= --sort=-%cpu | awk '$2 > 5 && $1 != "ps" && $1 != "awk" { print $1 }' |
+        head -n 3 | paste -sd ',' - | sed 's/,/, /g'
+}
+
 page_power() {
-    local current choice profile label
-    current=$(powerprofilesctl get)
-    choice=$(powerprofilesctl list | sed -n 's/^[* ] *\([a-z-]*\):$/\1/p' | while read -r profile; do
+    local current choice profile label dir message busy
+    dir=$(battery_dir)
+    if [[ -n $dir ]]; then message=$(battery_summary "$dir"); else message="Kein Akku · Netzbetrieb"; fi
+    busy=$(busy_apps)
+    [[ -n $busy ]] && message+=$'\n'"Viel Energie: $busy"
+    ppd_running || { notify "Energie" "$message"; exit 0; }
+    current=$(ppd_property get ActiveProfile | awk -F '"' '{ print $2 }')
+    choice=$(busctl --system --json=short get-property net.hadess.PowerProfiles /net/hadess/PowerProfiles \
+        net.hadess.PowerProfiles Profiles | jq -r '.data[].Profile.data' | while read -r profile; do
         case $profile in
-            performance) label="󱐋   Leistung" ;;
-            balanced) label="󰾅   Ausgewogen" ;;
             power-saver) label="󰾆   Energiesparen" ;;
+            balanced) label="󰾅   Ausgewogen" ;;
+            performance) label="󱐋   Leistung" ;;
             *) label="     $profile" ;;
         esac
         [[ $profile == "$current" ]] && label+="  ✓"
         row "$label" "$profile"
-    done | pick "󰂄" "Energieprofil" --width 26) || back $?
-    powerprofilesctl set "$choice"
+    done | pick "󰂄" "Energie" --width 30 --message "$message") || back $?
+    ppd_property set ActiveProfile s "$choice"
 }
 
 # --- Mitteilungen --------------------------------------------------------------

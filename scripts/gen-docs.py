@@ -33,6 +33,7 @@ RULES = [
     (r"exec_cmd\(tuiFiles\)", "Programs", "Terminal file manager (Yazi)"),
     (r"exec_cmd\(lock\)", "System", "Lock screen"),
     (r"exec_cmd\(powermenu\)", "System", "Power menu"),
+    (r"exec_cmd\(systemmenu\)", "System", "System menu (the Arch logo at the top left)"),
     (r"waybar", "System", "Restart Waybar"),
     (r"wallpaper .. \" tui\"", "System", "Wallpaper picker"),
     (r"hl\.dsp\.exit", "System", "Exit Hyprland"),
