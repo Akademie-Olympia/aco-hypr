@@ -6,7 +6,7 @@ pkgdesc='Hyprland desktop, screenshot and window helpers'
 arch=('any')
 url='https://github.com/Akademie-Olympia/aco-arch-dotfiles'
 license=('LicenseRef-arch-dotfiles-bundle')
-depends=('aco-arch-dotfiles-core>=0.3.0' 'aco-arch-dotfiles-aco-theme' 'hyprland>=0.56.0' 'hyprlock' 'hypridle' 'xdg-desktop-portal-hyprland' 'wl-clipboard' 'grim' 'slurp' 'satty' 'brightnessctl' 'jq' 'util-linux' 'procps-ng' 'sudo' 'aco-arch-dotfiles-kitty' 'aco-arch-dotfiles-rofi' 'aco-arch-dotfiles-waybar' 'aco-arch-dotfiles-swaync' 'aco-arch-dotfiles-wallpaper' 'aco-arch-dotfiles-tmux' 'aco-arch-dotfiles-yazi' 'aco-arch-dotfiles-qt' 'aco-arch-dotfiles-settings' 'dolphin' 'kio-extras' 'ffmpegthumbs' 'ark' 'celluloid' 'amberol' 'xdg-utils' 'firefox' 'psmisc' 'wireplumber' 'xdg-desktop-portal-gtk')
+depends=('aco-arch-dotfiles-core>=0.3.0' 'aco-arch-dotfiles-aco-theme' 'hyprland>=0.56.0' 'hyprlock' 'hypridle' 'xdg-desktop-portal-hyprland' 'wl-clipboard' 'grim' 'slurp' 'satty' 'brightnessctl' 'jq' 'util-linux' 'procps-ng' 'sudo' 'aco-arch-dotfiles-kitty' 'aco-arch-dotfiles-rofi' 'aco-arch-dotfiles-waybar' 'aco-arch-dotfiles-swaync' 'aco-arch-dotfiles-wallpaper' 'aco-arch-dotfiles-tmux' 'aco-arch-dotfiles-yazi' 'aco-arch-dotfiles-qt6ct' 'aco-arch-dotfiles-settings' 'dolphin' 'kio-extras' 'ffmpegthumbs' 'ark' 'celluloid' 'amberol' 'xdg-utils' 'firefox' 'psmisc' 'wireplumber' 'xdg-desktop-portal-gtk')
 optdepends=('pciutils: GPU, network and audio drivers in Einstellungen > System' 'bluez-utils: Bluetooth page in the settings' 'pavucontrol: mixer from the sound page' 'ffmpeg: camera preview (ffplay) in Einstellungen > Kamera')
 replaces=('arch-dotfiles-hypr')
 conflicts=('arch-dotfiles-hypr')
