@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-# POWER-MENÜ (Rechts oben unter der Waybar via Fuzzel)
+# POWER-MENÜ (zentriert, wie der Launcher)
 # ============================================================================
 
 if pgrep -x "fuzzel" > /dev/null; then
@@ -8,24 +8,21 @@ if pgrep -x "fuzzel" > /dev/null; then
     exit 0
 fi
 
-options="󰐥  Herunterfahren\n󰜉  Neu starten\n󰤄  Standby\n󰌾  Bildschirm sperren\n󰍃  Abmelden (TTY)"
+options="󰌾   Bildschirm sperren\n󰍃   Abmelden\n󰤄   Ruhezustand\n󰜉   Neu starten\n󰐥   Ausschalten"
 
 chosen="$(printf "%b" "$options" | fuzzel --dmenu \
-    --anchor=top-right \
-    --x-margin=0 \
-    --y-margin=26 \
-    --width=22 \
+    --width=26 \
     --lines=5 \
     --hide-prompt)"
 
 case "$chosen" in
-    *"Herunterfahren"*)
+    *"Ausschalten"*)
         systemctl poweroff
         ;;
     *"Neu starten"*)
         systemctl reboot
         ;;
-    *"Standby"*)
+    *"Ruhezustand"*)
         systemctl suspend
         ;;
     *"Bildschirm sperren"*)

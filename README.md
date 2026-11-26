@@ -32,8 +32,8 @@ The PNG is saved to `~/Downloads` and copied to the clipboard immediately. Satty
 `Enter` / `Ctrl+C` copies and saves the edited version; `Ctrl+S` saves. The editor then closes. While typing text, `Enter` first confirms the text.
 `Esc` cancels the selection; in the editor the already saved original capture is kept.
 
-The defaults live in `~/.config/hypr/satty.toml` (colours matching the desktop, arrow tool, visible toolbars). Your own changes survive updates like
-other user settings. `SCREENSHOT_DIR` overrides the location, for example `SCREENSHOT_DIR="$HOME/Pictures/Screenshots" screenshot region`.
+The Satty defaults (theme colours, arrow tool, visible toolbars) are generated from `aco-theme/satty.toml.tpl`; change the
+template in your user copy to adjust them. `SCREENSHOT_DIR` overrides the location, for example `SCREENSHOT_DIR="$HOME/Pictures/Screenshots" screenshot region`.
 More modes: `screenshot window`, `screenshot monitor`, `screenshot full`. Without Satty, capturing, saving and copying still work.
 Window captures show the visible part of the screen, not hidden window contents. No extra background service runs.
 
@@ -50,6 +50,12 @@ arrange monitors relative to each other, scale, rotate and save profiles that ar
 
 Your own changes in the activated user copy survive synchronisation; new differing defaults appear as `.pacnew`.
 See [update and recovery](https://aco-arch-dotfiles.readthedocs.io/en/latest/verification/).
+
+### Theme
+
+Colours, fonts and rounding come from [aco-theme](https://github.com/Akademie-Olympia/aco-theme): the templates in `aco-theme/` are rendered to `~/.config/aco/theme/hypr/` and included from here, so this config only holds behaviour and layout. Switch with `aco-theme mode|accent|transparency`; personal overrides go into `~/.config/aco/theme.local.conf`.
+
+`Super + I` opens the settings hub (`settings.sh`: appearance, wallpaper, displays, network, Bluetooth, sound, shortcuts, update; entries appear only when their tool is installed). `Super + Shift + T` toggles light/dark.
 
 [![Package safety](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml/badge.svg)](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml)
 

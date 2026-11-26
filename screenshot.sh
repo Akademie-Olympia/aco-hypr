@@ -30,10 +30,14 @@ for cmd in "${required[@]}"; do
     fi
 done
 
+# shellcheck source=/dev/null
+source "${XDG_CONFIG_HOME:-$HOME/.config}/aco/theme/hypr/colors.sh"
+: "${aco_accent:?}" "${aco_scrim:?}"
+
 args=()
 if [[ "$mode" == region ]]; then
     # Escape/Abbruch darf weder einen Screenshot noch eine leere Datei erzeugen.
-    geometry="$(slurp -b 1e1e2e99 -c 89b4faff -s 00000000 -w 2)" || exit 0
+    geometry="$(slurp -b "$aco_scrim" -c "${aco_accent}ff" -s 00000000 -w 2)" || exit 0
     [[ -n "$geometry" ]] || exit 0
     args=(-g "$geometry")
 elif [[ "$mode" == window ]]; then
@@ -64,7 +68,7 @@ fi
 
 if command -v satty >/dev/null 2>&1; then
     satty_args=()
-    satty_config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/satty.toml"
+    satty_config="${XDG_CONFIG_HOME:-$HOME/.config}/aco/theme/hypr/satty.toml"
     if [[ -f "$satty_config" ]]; then
         satty_args+=(--config "$satty_config")
     else
