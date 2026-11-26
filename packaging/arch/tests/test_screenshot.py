@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -11,6 +12,12 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[3]
+
+
+def render(template):
+    """Stand-in for aco-theme: quoted placeholders become colours, bare ones numbers."""
+    text = re.sub(r'"\{\{[a-z0-9_:]+\}\}"', '"#000000"', template.read_text())
+    return re.sub(r"\{\{[a-z0-9_:]+\}\}", "1", text)
 MOCK = r'''
 import json, os, pathlib, sys
 name = pathlib.Path(sys.argv[0]).name
@@ -42,9 +49,10 @@ class ScreenshotTests(unittest.TestCase):
             script = self.bin / name
             script.write_text(f"#!{sys.executable}\n" + MOCK)
             script.chmod(0o755)
-        self.config = self.base / "config" / "hypr"
+        self.config = self.base / "config" / "aco" / "theme" / "hypr"
         self.config.mkdir(parents=True)
-        shutil.copy2(ROOT / "satty.toml", self.config)
+        for name in ("satty.toml", "colors.sh"):
+            (self.config / name).write_text(render(ROOT / "aco-theme" / f"{name}.tpl"))
         self.env = dict(os.environ, PATH=str(self.bin), HOME=str(self.base),
                         XDG_CONFIG_HOME=str(self.base / "config"),
                         SCREENSHOT_DIR=str(self.base / "shots with spaces"),
@@ -118,7 +126,7 @@ class ScreenshotTests(unittest.TestCase):
         self.assertFalse(self.calls("grim"))
 
     def test_config_is_valid_toml(self):
-        config = tomllib.loads((ROOT / "satty.toml").read_text())
+        config = tomllib.loads(render(ROOT / "aco-theme" / "satty.toml.tpl"))
         self.assertTrue(config["general"]["save-after-copy"])
         self.assertEqual(config["general"]["actions-on-enter"], ["save-to-clipboard"])
 

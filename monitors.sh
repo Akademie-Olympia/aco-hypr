@@ -54,8 +54,12 @@ HELP
 need() { command -v "$1" >/dev/null || { echo "monitors.sh: '$1' fehlt" >&2; exit 1; }; }
 need hyprctl; need jq
 
+# shellcheck source=/dev/null
+source "${XDG_CONFIG_HOME:-$HOME/.config}/aco/theme/hypr/colors.sh"
+: "${aco_accent:?}" "${aco_scrim:?}"
+
 # Built-in Hyprland notification: no notification daemon required.
-notify() { hyprctl notify -1 2500 "rgb(89b4fa)" "$*" >/dev/null 2>&1 || true; }
+notify() { hyprctl notify -1 2500 "rgb($aco_accent)" "$*" >/dev/null 2>&1 || true; }
 
 live() { hyprctl monitors all -j; }
 

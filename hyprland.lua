@@ -1,5 +1,5 @@
 -- ============================================================================
--- HYPRLAND KONFIGURATION (Minimalistisch · Instant · Matte Sage/Slate Theme)
+-- HYPRLAND KONFIGURATION (Minimalistisch · ACO-Theme, siehe aco-theme)
 -- Dokumentation aller Tastenkombinationen: ~/.config/hypr/README.md
 -- ============================================================================
 
@@ -45,6 +45,7 @@ local fileManager = "pcmanfm"
 local tuiFiles    = "kitty -e yazi"
 local lock           = "hyprlock"
 local powermenu      = home .. "/.config/hypr/powermenu.sh"
+local settings       = home .. "/.config/hypr/settings.sh"
 local windowswitcher = home .. "/.config/hypr/windowswitcher.sh"
 local wallpaper      = home .. "/.config/wallpaper/wallpaper.sh"
 local monitors       = home .. "/.config/hypr/monitors.sh"
@@ -81,17 +82,26 @@ hl.env("HYPRCURSOR_SIZE", "20")
 -----------------------
 ---- LOOK AND FEEL ----
 -----------------------
--- Minimalistisch: Keine Animationen, keine Ränder/Abstände am Rand, keine Rundungen/Schatten/Blur
--- Catppuccin Mocha Pastellfarben: Base (#1e1e2e), Surface0 (#313244), Pastel Blue (#89b4fa) & Teal (#94e2d5)
+-- Colours, rounding, gaps and blur come from the shared ACO theme (aco-theme),
+-- rendered to ~/.config/aco/theme/hypr/theme.lua. Render it once if missing.
+local theme_file = config_home .. "/aco/theme/hypr/theme.lua"
+local rendered = io.open(theme_file, "r")
+if rendered then
+    rendered:close()
+else
+    os.execute("aco-theme --quiet render")
+end
+local theme = dofile(theme_file)
+
 hl.config({
     general = {
-        gaps_in     = 0,
-        gaps_out    = 0,
-        border_size = 1,
+        gaps_in     = theme.gaps_in,
+        gaps_out    = theme.gaps_out,
+        border_size = theme.border_size,
 
         col = {
-            active_border   = "rgba(89b4faff)",
-            inactive_border = "rgba(313244ff)",
+            active_border   = theme.active_border,
+            inactive_border = theme.inactive_border,
         },
 
         resize_on_border = true,
@@ -100,21 +110,33 @@ hl.config({
     },
 
     decoration = {
-        rounding         = 0,
+        rounding         = theme.rounding,
+        rounding_power   = 2.4,
         active_opacity   = 1.0,
         inactive_opacity = 1.0,
 
+        -- Soft, wide shadow like floating paper rather than a hard drop shadow.
         shadow = {
-            enabled = false,
+            enabled      = true,
+            range        = 18,
+            render_power = 3,
+            offset       = "0 4",
+            color        = theme.shadow,
         },
 
+        -- Blur only shows behind translucent layers (bar, launcher) and follows
+        -- `aco-theme transparency`; windows themselves stay opaque.
         blur = {
-            enabled = false,
+            enabled           = theme.blur,
+            size              = theme.blur_size,
+            passes            = theme.blur_passes,
+            new_optimizations = true,
+            popups            = true,
         },
     },
 
     animations = {
-        enabled = false,
+        enabled = true,
     },
 
     dwindle = {
@@ -127,13 +149,12 @@ hl.config({
     },
 
     misc = {
-        -- Hintergrundbilder bleiben wie gewünscht unverändert
-        force_default_wallpaper = -1,
-        disable_hyprland_logo   = false,
-        background_color        = "0x1e1e2e",
-        animate_manual_resizes  = false,
+        force_default_wallpaper      = -1,
+        disable_hyprland_logo        = true,
+        disable_splash_rendering     = true,
+        background_color             = theme.background,
+        animate_manual_resizes       = false,
         animate_mouse_windowdragging = false,
-        disable_splash_rendering = true,
     },
 
     binds = {
@@ -147,6 +168,23 @@ hl.config({
     cursor = {
         warp_on_change_workspace = 1,
     },
+})
+
+-- Short, calm motion: things fade and settle instead of sliding across the screen.
+hl.curve("settle", { type = "bezier", points = { {0.22, 1}, {0.36, 1} } })
+hl.animation({ leaf = "global",     enabled = true, speed = 4,   bezier = "settle" })
+hl.animation({ leaf = "windowsIn",  enabled = true, speed = 3,   bezier = "settle", style = "popin 94%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 2,   bezier = "settle", style = "popin 94%" })
+hl.animation({ leaf = "layers",     enabled = true, speed = 2.5, bezier = "settle", style = "fade" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 3,   bezier = "settle", style = "fade" })
+
+-- Translucent shell surfaces get the blur behind them; fully transparent
+-- pixels (rounded corners, shadows) are left alone.
+hl.layer_rule({
+    name         = "blur-shell",
+    match        = { namespace = "^(waybar|launcher|notifications)$" },
+    blur         = theme.blur,
+    ignore_alpha = 0.2,
 })
 
 
@@ -199,6 +237,8 @@ hl.bind(mainMod .. " + E",              hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + Y",              hl.dsp.exec_cmd(tuiFiles))
 hl.bind(mainMod .. " + L",              hl.dsp.exec_cmd(lock))
 hl.bind(mainMod .. " + Escape",    hl.dsp.exec_cmd(powermenu))
+hl.bind(mainMod .. " + I",         hl.dsp.exec_cmd(settings))
+hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("aco-theme mode toggle"))
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR2 waybar || (pkill waybar; waybar &)"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd(wallpaper .. " tui"))
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd(monitors .. " menu"))
@@ -385,7 +425,7 @@ local function save_window_slot(slot)
     hl.notification.create({
         text     = string.format("Position [%d] gespeichert: %s (%s)", slot, app, mon),
         duration = 1600,
-        color    = "rgba(89b4faff)",
+        color    = theme.notify,
     })
 end
 
