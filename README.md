@@ -55,7 +55,7 @@ See [update and recovery](https://aco-arch-dotfiles.readthedocs.io/en/latest/ver
 
 Colours, fonts and rounding come from [aco-theme](https://github.com/Akademie-Olympia/aco-theme): the templates in `aco-theme/` are rendered to `~/.config/aco/theme/hypr/` and included from here, so this config only holds behaviour and layout. Switch with `aco-theme mode|accent|transparency`; personal overrides go into `~/.config/aco/theme.local.conf`.
 
-`Super + I` opens the settings hub (`settings.sh`: appearance, wallpaper, displays, network, Bluetooth, sound, shortcuts, update; entries appear only when their tool is installed). `Super + Shift + T` toggles light/dark.
+`Super + I` opens the settings hub (`settings.sh`: appearance, wallpaper, displays, network, Bluetooth, sound, shortcuts, update; entries appear only when their tool is installed). `Super + Shift + T` toggles light/dark. `Super + U` opens the notification centre (aco-swaync).
 
 [![Package safety](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml/badge.svg)](https://github.com/Akademie-Olympia/aco-hypr/actions/workflows/package.yml)
 

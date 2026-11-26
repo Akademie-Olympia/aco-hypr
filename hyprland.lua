@@ -184,7 +184,7 @@ hl.animation({ leaf = "workspaces", enabled = true, speed = 3,   bezier = "settl
 -- pixels (rounded corners, shadows) are left alone.
 hl.layer_rule({
     name         = "blur-shell",
-    match        = { namespace = "^(waybar|launcher|notifications)$" },
+    match        = { namespace = "^(waybar|launcher|swaync-notification-window|swaync-control-center)$" },
     blur         = theme.blur,
     ignore_alpha = 0.2,
 })
@@ -240,6 +240,7 @@ hl.bind(mainMod .. " + Y",              hl.dsp.exec_cmd(tuiFiles))
 hl.bind(mainMod .. " + L",              hl.dsp.exec_cmd(lock))
 hl.bind(mainMod .. " + Escape",    hl.dsp.exec_cmd(powermenu))
 hl.bind(mainMod .. " + I",         hl.dsp.exec_cmd(settings))
+hl.bind(mainMod .. " + U",         hl.dsp.exec_cmd("swaync-client -t -sw"))
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("aco-theme mode toggle"))
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("killall -SIGUSR2 waybar || (pkill waybar; waybar &)"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd(wallpaper .. " tui"))
