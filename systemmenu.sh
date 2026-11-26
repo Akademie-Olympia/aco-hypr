@@ -17,8 +17,8 @@ rows() {
 
 choice=$(rows | aco-menu --dropdown left --prompt "" --lines 9) || exit 0
 case $choice in
-    *"Über dieses System"*) exec "$settings" system ;;
-    *Einstellungen*) exec "$settings" ;;
+    *"Über dieses System"*) exec aco-settings about ;;
+    *Einstellungen*) exec aco-settings ;;
     *Programme*) exec aco-menu apps ;;
     *aktualisieren*) exec "$settings" update ;;
     *sperren*) exec hyprlock ;;

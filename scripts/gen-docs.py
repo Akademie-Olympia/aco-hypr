@@ -23,7 +23,7 @@ RULES = [
     (r"exec_cmd\(terminal\)", "Programs", "Open terminal"),
     (r'exec_cmd\("kitty -e tmux', "Programs", "Terminal with tmux session `main`"),
     (r"exec_cmd\(menu\)", "Programs", "Application launcher (rofi, `aco-menu apps`)"),
-    (r"exec_cmd\(settings\)", "System", "Settings (appearance, wallpaper, Wi-Fi, sound, displays, drivers …)"),
+    (r"exec_cmd\(settings\)", "System", "Settings app (displays, sound, Wi-Fi, Bluetooth, appearance, screenshots …)"),
     (r'panel \.\. " notifications"', "System", "Notification centre"),
     (r'panel \.\. " control"', "System", "Control centre (toggles, sliders, media)"),
     (r"exec_cmd\(screenshot .. \" menu\"\)", "Screenshots", "Screenshot menu (region, window, monitor, all, timer)"),
