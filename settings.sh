@@ -100,7 +100,52 @@ page_accent() {
 
 # --- Hintergrund und Bildschirme -----------------------------------------------
 page_wallpaper() { exec bash "$config_home/wallpaper/wallpaper.sh" tui; }
-page_displays() { exec bash "$config_home/hypr/monitors.sh" menu; }
+
+# Bildschirme: Anordnung über monitors.sh, dazu das Verhalten der Workspaces
+# (workspaces.lua liest ~/.config/aco/workspaces.conf beim Laden der Konfiguration).
+workspaces_conf="$config_home/aco/workspaces.conf"
+
+workspaces_get() { # schluessel standardwert
+    local value
+    value=$(awk -F ' *= *' -v k="$1" '$1 == k { v = $2 } END { print v }' "$workspaces_conf" 2>/dev/null)
+    echo "${value:-$2}"
+}
+
+workspaces_set() { # schluessel wert
+    local mode persistent
+    mode=$(workspaces_get mode monitor) persistent=$(workspaces_get persistent 5)
+    case $1 in mode) mode=$2 ;; persistent) persistent=$2 ;; esac
+    mkdir -p "${workspaces_conf%/*}"
+    printf '# Written by the settings hub (Einstellungen > Bildschirme).\nmode = %s\npersistent = %s\n' \
+        "$mode" "$persistent" >"$workspaces_conf"
+    hyprctl reload >/dev/null
+}
+
+page_displays() {
+    local mode persistent choice count
+    mode=$(workspaces_get mode monitor)
+    persistent=$(workspaces_get persistent 5)
+    choice=$({
+        row "󰍹   Anordnen, spiegeln, skalieren …" arrange
+        if [[ $mode == all ]]; then
+            row "󰕰   Workspaces pro Bildschirm" "mode monitor"
+            row "󰕰   Workspaces auf allen Bildschirmen gleichzeitig  ✓" "mode all"
+        else
+            row "󰕰   Workspaces pro Bildschirm  ✓" "mode monitor"
+            row "󰕰   Workspaces auf allen Bildschirmen gleichzeitig" "mode all"
+        fi
+        row "󰝥   Kreise in der Leiste: $persistent" persistent
+    } | pick "󰍹" "Bildschirme" --width 38 --message "Super + 1 … 9 wechselt den Workspace") || back $?
+    case $choice in
+        arrange) exec bash "$config_home/hypr/monitors.sh" menu ;;
+        mode*) workspaces_set mode "${choice#mode }"; page_displays ;;
+        persistent)
+            count=$(for count in 3 4 5 6 7 8 9; do row "$count Kreise" "$count"; done |
+                pick "󰝥" "Feste Kreise pro Bildschirm") || back $? displays
+            workspaces_set persistent "$count"
+            page_displays ;;
+    esac
+}
 
 # --- WLAN & Netzwerk -----------------------------------------------------------
 signal_icon() {

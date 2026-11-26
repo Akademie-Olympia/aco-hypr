@@ -45,6 +45,9 @@ rules take precedence; existing individual layouts are preserved.
 `~/.config/hypr/monitors.local.lua` holds machine-specific monitor rules and is not packaged. The template `monitors.example.lua` shows the
 format; `hyprctl monitors all` lists the outputs. Instead of editing it by hand you can use `monitors.sh` (`Super + Shift + D`): extend, mirror,
 arrange monitors relative to each other, scale, rotate and save profiles that are restored automatically when the same monitors are plugged in.
+Each monitor has its own row of workspaces, shown as circles in the bar (filled = on screen). `Super + 1…9` switches the
+focused monitor, or every monitor at once in mode `all`; switch the mode and the number of fixed circles under
+**Einstellungen > Bildschirme** (`workspaces.lua`, `~/.config/aco/workspaces.conf`).
 `Super + S` shows or hides the scratchpad workspace; `Super + Shift + S` moves the active window there. After changes run `hyprctl reload` and
 `hyprctl configerrors`.
 
