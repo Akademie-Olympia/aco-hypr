@@ -37,6 +37,11 @@ template in your user copy to adjust them. `SCREENSHOT_DIR` overrides the locati
 More modes: `screenshot window`, `screenshot monitor`, `screenshot full`. Without Satty, capturing, saving and copying still work.
 Window captures show the visible part of the screen, not hidden window contents. No extra background service runs.
 
+### Laptop keys
+
+Volume, microphone and brightness keys run `osd.sh`, which changes the value and shows a short banner with a bar
+(through aco-swaync, not kept in the notification history).
+
 ### Monitors and local rules
 
 New monitors are placed to the right of the existing ones with their preferred resolution and scale `1` (`auto-right`). Explicit local monitor

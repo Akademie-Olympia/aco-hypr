@@ -54,6 +54,7 @@ local windowswitcher = home .. "/.config/hypr/windowswitcher.sh"
 local wallpaper      = home .. "/.config/wallpaper/wallpaper.sh"
 local monitors       = home .. "/.config/hypr/monitors.sh"
 local screenshot     = string.format("%q", config_home .. "/hypr/screenshot.sh")
+local osd            = string.format("%q", config_home .. "/hypr/osd.sh")
 
 
 -------------------
@@ -655,13 +656,13 @@ hl.bind(mainMod .. " + Print",     hl.dsp.exec_cmd(screenshot .. " full"))
 hl.bind("ALT + Print",             hl.dsp.exec_cmd(screenshot .. " window"))
 hl.bind("SHIFT + Print",           hl.dsp.exec_cmd(screenshot .. " monitor"))
 
--- Multimedia & Helligkeit (Laptop-Funktionstasten)
-hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),        { locked = true, repeating = true })
-hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),       { locked = true })
-hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),     { locked = true })
-hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                    { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                    { locked = true, repeating = true })
+-- Multimedia & Helligkeit (Laptop-Funktionstasten), mit kurzer Anzeige (osd.sh)
+hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd(osd .. " volume up"),     { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd(osd .. " volume down"),   { locked = true, repeating = true })
+hl.bind("XF86AudioMute",         hl.dsp.exec_cmd(osd .. " volume mute"),   { locked = true })
+hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd(osd .. " mic"),           { locked = true })
+hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd(osd .. " brightness up"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(osd .. " brightness down"), { locked = true, repeating = true })
 
 
 --------------------------------

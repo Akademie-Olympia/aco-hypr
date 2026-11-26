@@ -72,12 +72,12 @@ RULES = [
     (r"workspaces\.go_empty", "Workspaces", "Open an empty workspace"),
     (r"workspaces\.go_existing", "Workspaces", "Go to workspace N, if it exists"),
     (r"workspaces\.go\(i\)", "Workspaces", "Switch to workspace N (this monitor, or all in mode \"all\")"),
-    (r"AudioRaise|wpctl set-volume -l", "Media", "Volume up"),
-    (r"wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", "Media", "Volume down"),
-    (r"set-mute @DEFAULT_AUDIO_SINK@", "Media", "Mute"),
-    (r"set-mute @DEFAULT_AUDIO_SOURCE@", "Media", "Mute microphone"),
-    (r"brightnessctl.*5%\+", "Media", "Brighter"),
-    (r"brightnessctl.*5%-", "Media", "Dimmer"),
+    (r'osd \.\. " volume up"', "Media", "Volume up"),
+    (r'osd \.\. " volume down"', "Media", "Volume down"),
+    (r'osd \.\. " volume mute"', "Media", "Mute"),
+    (r'osd \.\. " mic"', "Media", "Mute microphone"),
+    (r'osd \.\. " brightness up"', "Media", "Brighter"),
+    (r'osd \.\. " brightness down"', "Media", "Dimmer"),
 ]
 GROUPS = ["Programs", "System", "Windows", "Focus", "Workspaces", "Monitors", "Scratchpad",
           "Screenshots", "Media", "Other"]
