@@ -103,6 +103,8 @@ hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hl.env("XDG_CONFIG_DIRS", qt_theme .. ":" .. (os.getenv("XDG_CONFIG_DIRS") or "/etc/xdg"))
 hl.env("XDG_DATA_DIRS", qt_theme .. ":" .. (os.getenv("XDG_DATA_DIRS") or "/usr/local/share:/usr/share"))
 hl.env("HYPRCURSOR_SIZE", "20")
+-- Electron apps (Code - OSS, Obsidian) run natively on Wayland instead of XWayland.
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 
 
 -----------------------
