@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================================================
-# STANDARD-PROGRAMME: die eigenen ACO-Apps (Musik, Video, Bilder, PDF,
-# Editor), Ordner in Dolphin. Fehlt eine ACO-App (Add-on nicht installiert),
+# STANDARD-PROGRAMME: die eigenen ACO-Apps (Dateien, Musik, Video, Bilder,
+# PDF, Editor). Fehlt eine ACO-App (Add-on nicht installiert),
 # greift die nächste installierte Alternative der Liste.
 # Läuft bei jedem Hyprland-Start und setzt nur Typen, die in der eigenen
 # ~/.config/mimeapps.list noch fehlen: eigene Entscheidungen (xdg-mime,
@@ -30,7 +30,7 @@ set_default() { # "app.desktop alternative.desktop ..." mime-typ...
     done
 }
 
-set_default "org.kde.dolphin.desktop" inode/directory
+set_default "org.aco.Files.desktop org.kde.dolphin.desktop" inode/directory
 set_default "org.aco.Video.desktop io.github.celluloid_player.Celluloid.desktop" \
     video/mp4 video/x-matroska video/webm video/quicktime video/x-msvideo video/mpeg video/ogg
 set_default "org.aco.Music.desktop io.bassi.Amberol.desktop" \

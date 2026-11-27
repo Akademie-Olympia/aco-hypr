@@ -45,7 +45,7 @@ workspaces.apply_rules()
 local terminal    = "kitty"
 local menu        = "aco-menu apps"
 local browser     = "firefox"
-local fileManager = "dolphin"
+local fileManager = "aco-files"
 local tuiFiles    = "kitty -e yazi"
 local lock           = "hyprlock"
 local powermenu      = home .. "/.config/hypr/powermenu.sh"
