@@ -68,7 +68,7 @@ hl.on("hyprland.start", function()
     workspaces.apply_rules()
     -- Control centre and notification centre share one swaync (aco-swaync).
     hl.exec_cmd(panel .. " setup")
-    -- Dolphin, Celluloid and Amberol as default apps, unless you chose others.
+    -- ACO apps (and Dolphin for folders) as default apps, unless you chose others.
     hl.exec_cmd(config_home .. "/hypr/defaults.sh")
     -- Colour scheme and fonts for GTK, Firefox and Electron apps (dconf, per login).
     hl.exec_cmd("aco-theme --quiet session")

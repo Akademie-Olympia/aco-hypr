@@ -9,7 +9,7 @@ Why Hyprland is built the way it is, what it needs from other ACO components, wh
 - Responsive instead of pretty: no animations, blur, shadows or gaps – maximum screen space.
 - Several monitors are the normal case: focus and window jumps, window slots (`Super + F1…F4`), workspace swap, a monitor tool with profiles; new monitors arrange themselves to the right.
 - The configuration is **Lua**; `scripts/gen-docs.py` generates the key list straight from it so documentation and bindings cannot drift apart.
-- It pulls the other desktop packages (terminal, menu, bar, wallpaper, tmux, Yazi, Dolphin, Celluloid, Amberol, browser) in as dependencies so an installation works immediately.
+- It pulls the other desktop packages (terminal, menu, bar, wallpaper, tmux, Yazi, Dolphin, settings app); the ACO media apps and the browser are optional groups in as dependencies so an installation works immediately.
 
 ## What this configuration needs from others
 

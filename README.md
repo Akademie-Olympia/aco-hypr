@@ -50,10 +50,11 @@ D-Bus). `Super + A` opens the control centre and `Super + U` the notification ce
 
 ### Apps
 
-Dolphin (files), Celluloid (video and films, mpv underneath) and Amberol (music) come with the package and follow the
-theme: the GTK 4 apps through aco-gtk4, Dolphin through aco-qt (`QT_QPA_PLATFORMTHEME=qt6ct`). At login
-`defaults.sh` makes them the default apps for folders, video and audio, but only for types you have not chosen
-yourself.
+Dolphin (files) comes with the package and follows the theme through aco-qt (`QT_QPA_PLATFORMTHEME=qt6ct`). The ACO
+apps are separate packages: the PDF reader and the editor belong to the base desktop, Musik, Video and Bilder to the
+media group (`aco install media`), Firefox to the browser group (`aco install browser`). At login `defaults.sh`
+makes them the default apps for folders, PDF, text, images, video and audio, falling back to Celluloid or Amberol
+when an ACO app is not installed, but only for types you have not chosen yourself.
 
 ### Laptop keys
 
