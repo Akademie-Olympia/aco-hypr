@@ -50,11 +50,12 @@ D-Bus). `Super + A` opens the control centre and `Super + U` the notification ce
 
 ### Apps
 
-Dolphin (files) comes with the package and follows the theme through aco-qt (`QT_QPA_PLATFORMTHEME=qt6ct`). The ACO
-apps are separate packages: the PDF reader and the editor belong to the base desktop, Musik, Video and Bilder to the
-media group (`aco install media`), Firefox to the browser group (`aco install browser`). At login `defaults.sh`
-makes them the default apps for folders, PDF, text, images, video and audio, falling back to Celluloid or Amberol
-when an ACO app is not installed, but only for types you have not chosen yourself.
+The file manager is ACO Dateien (`aco-files`, Super+E), a native app of the base desktop. The other ACO apps are
+separate packages: the PDF reader and the editor belong to the base desktop, Musik, Video and Bilder to the media group
+(`aco install media`), Firefox to the browser group (`aco install browser`). At login `defaults.sh` makes them the
+default apps for folders, PDF, text, images, video and audio, falling back to Dolphin, Celluloid or Amberol when an
+ACO app is not installed, but only for types you have not chosen yourself. Dolphin is optional and still themed
+through aco-qt.
 
 ### Laptop keys
 
